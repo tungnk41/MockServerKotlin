@@ -6,10 +6,12 @@ val logback_version: String by project
 val postgres_version: String by project
 val hikaricp_version: String by project
 val exposed_version: String by project
+val gson_version: String by project
 
 plugins {
     application
     kotlin("jvm") version "1.6.10"
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.6.20"
     id("com.github.johnrengelman.shadow") version "6.1.0"
 }
 
@@ -18,7 +20,6 @@ version = "0.0.1"
 
 application {
     mainClass.set("com.mock.ApplicationKt")
-    mainClassName = "com.mock.ApplicationKt"
 }
 
 repositories {
@@ -59,8 +60,4 @@ tasks{
             attributes(Pair("Main-Class", "com.mock.ApplicationKt"))
         }
     }
-}
-
-tasks.create("stage") {
-    dependsOn("installDist")
 }

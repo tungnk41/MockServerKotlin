@@ -4,9 +4,10 @@ import com.mock.repository.data.source.local.database.DatabaseFactory
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import com.mock.plugins.*
+import io.ktor.application.*
 
 fun main() {
-    embeddedServer(Netty, port = System.getenv("PORT")?.toInt() ?: 8080) {
+    embeddedServer(Netty) {
         DatabaseFactory.init()
         configureSecurity()
         configureMonitoring()

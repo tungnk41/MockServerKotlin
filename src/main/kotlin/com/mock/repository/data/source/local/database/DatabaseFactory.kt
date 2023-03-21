@@ -24,31 +24,27 @@ object DatabaseFactory {
     private fun hikari(): HikariDataSource {
         val config = HikariConfig()
 
-        val dbUri = URI(System.getenv("DATABASE_URL") ?: "postgresql://localhost:5432/mockserver")
-        val dbUserInfo : String? = dbUri.userInfo
+        val databaseUrl = URI(System.getenv("DATABASE_URL"))
+        val dbUserInfo : String? = databaseUrl.userInfo
         var username: String? = null
         var password: String? = null
 
-        if(dbUserInfo != null) {
+        dbUserInfo?.let {
             username = dbUserInfo.split(":")[0]
             password = dbUserInfo.split(":")[1]
-        }else {
-            username = System.getenv("DATABASE_USERNAME")
-            password = System.getenv("DATABASE_PASSWORD")
-        }
-        username?.let {
-            config.username = username
+            username?.let {
+                config.username = username
+            }
+            password?.let {
+                config.password = password
+            }
         }
 
-        password?.let {
-            config.password = password
-        }
-        val dbUrl = "jdbc:postgresql://${dbUri.host}:${dbUri.port}${dbUri.path}?sslmode=require"
-        config.jdbcUrl = dbUrl
-        config.driverClassName = System.getenv("JDBC_DRIVER")
+        val jdbcUrl = "jdbc:postgresql://${databaseUrl.host}:${databaseUrl.port}${databaseUrl.path}?sslmode=require"
+        config.jdbcUrl = jdbcUrl
+        config.driverClassName = System.getenv("DRIVER_NAME")
         config.maximumPoolSize = 5
         config.isAutoCommit = false
-        config.transactionIsolation = "TRANSACTION_REPEATABLE_READ"
         config.validate()
         return HikariDataSource(config)
     }
