@@ -18,6 +18,7 @@ plugins {
 group = "com.mock"
 version = "0.0.1"
 
+project.setProperty("mainClassName", "com.mock.ApplicationKt")
 application {
     mainClass.set("com.mock.ApplicationKt")
 }
