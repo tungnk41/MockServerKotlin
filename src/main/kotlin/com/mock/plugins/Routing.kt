@@ -1,29 +1,26 @@
 package com.mock.plugins
 
-import com.mock.auth.JwtService
-import com.mock.auth.hash
-import com.mock.repository.RepositoryImpl.TodoRepository
-import com.mock.repository.RepositoryImpl.UserRepository
-import com.mock.repository.data.source.local.TodoLocalDataSource
-import com.mock.repository.data.source.local.UserLocalDataSource
-import com.mock.routes.TodoRoute
-import com.mock.routes.UserRoute
-import io.ktor.routing.*
-import io.ktor.locations.*
-import io.ktor.application.*
-import io.ktor.response.*
 
-fun Application.configureRouting() {
-    install(Locations) {
-    }
+import com.mock.routes.auth
+import com.mock.routes.note
+import io.ktor.server.application.*
 
-    val hashFunction = { s: String -> hash(s) }
+
+import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.config.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
+
+fun Application.configureRouting(config: ApplicationConfig) {
+
     routing {
-        UserRoute(UserRepository(UserLocalDataSource()), JwtService(), hashFunction)
-        TodoRoute(TodoRepository(TodoLocalDataSource()))
-
         get("/") {
             call.respondText("Hello World!")
         }
+        authenticate("auth-jwt") {
+            note(config)
+        }
+        auth(config)
     }
 }

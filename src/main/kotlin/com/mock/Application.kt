@@ -1,17 +1,17 @@
 package com.mock
 
-import com.mock.repository.data.source.local.database.DatabaseFactory
-import io.ktor.server.engine.*
+import com.mock.dao.DatabaseFactory
 import io.ktor.server.netty.*
 import com.mock.plugins.*
-import io.ktor.application.*
+import io.ktor.server.application.*
 
-fun main() {
-    embeddedServer(Netty) {
-        DatabaseFactory.init()
-        configureSecurity()
-        configureMonitoring()
-        configureSerialization()
-        configureRouting()
-    }.start(wait = true)
+fun main(args: Array<String>): Unit = EngineMain.main(args)
+
+fun Application.module() {
+    DatabaseFactory.init(environment.config)
+    configureAuthentication(environment.config)
+    configureSerialization()
+    configureException()
+
+    configureRouting(environment.config)
 }
