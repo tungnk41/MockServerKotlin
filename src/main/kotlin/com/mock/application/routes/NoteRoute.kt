@@ -1,14 +1,11 @@
 package com.mock.application.routes
 
 import com.mock.application.auth.principal.UserPrincipal
-import com.mock.application.models.Note
-import com.mock.application.models.User
+import com.mock.application.model.Note
 import com.mock.application.controller.noteController
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
-import io.ktor.server.auth.jwt.*
-import io.ktor.server.config.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*

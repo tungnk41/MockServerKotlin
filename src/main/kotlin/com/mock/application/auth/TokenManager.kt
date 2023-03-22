@@ -5,7 +5,7 @@ import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import com.mock.Environment
 import com.mock.config
-import com.mock.application.models.User
+import com.mock.application.model.User
 import com.mock.data.model.response.TokenResponse
 import java.util.*
 

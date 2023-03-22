@@ -1,10 +1,11 @@
 package com.mock.dao.user
 
 import com.mock.data.database.query
-import com.mock.application.models.Note
-import com.mock.application.models.User
+import com.mock.application.model.Note
+import com.mock.application.model.User
 import com.mock.data.database.entity.NoteEntity
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class NoteDaoImpl : NoteDao {
     private fun resultRowMapping(row: ResultRow) = Note(
@@ -16,7 +17,7 @@ class NoteDaoImpl : NoteDao {
         val insertStatement = NoteEntity.insert {
             it[title] = note.title
             it[content] = note.content
-            it[userId] = user.id
+            it[userId] = user.id!!
         }
         insertStatement.resultedValues?.singleOrNull()?.let(::resultRowMapping)
     }
@@ -41,13 +42,13 @@ class NoteDaoImpl : NoteDao {
 
     override suspend fun findByTitle(title: String, user: User): List<Note>? = query {
         NoteEntity
-            .select { NoteEntity.userId.eq(user.id) and  NoteEntity.title.eq(title) }
+            .select { NoteEntity.userId.eq(user.id!!) and  NoteEntity.title.eq(title) }
             .map(::resultRowMapping)
     }
 
     override suspend fun findAll(user: User): List<Note>? = query {
         NoteEntity
-            .select { NoteEntity.userId.eq(user.id)}
+            .select { NoteEntity.userId.eq(user.id!!)}
             .map(::resultRowMapping)
     }
 }

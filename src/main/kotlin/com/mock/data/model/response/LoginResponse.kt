@@ -1,6 +1,6 @@
 package com.mock.data.model.response
 
-import com.mock.application.models.User
+import com.mock.application.model.User
 import kotlinx.serialization.Serializable
 
 @Serializable

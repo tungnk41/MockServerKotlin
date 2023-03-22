@@ -25,7 +25,7 @@ class DatabaseFactory {
         val database = config[Environment.DB_DATABASE]
 
         val url = "$prefixUrl$host:$port/$database?user=$username&password=$password"
-        System.out.println(url)
+        println(url)
         val connectionPool = createHikari(
             url = url,
             driver = driver,

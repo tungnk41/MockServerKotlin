@@ -1,7 +1,7 @@
 package com.mock.dao.user
 
-import com.mock.application.models.Note
-import com.mock.application.models.User
+import com.mock.application.model.Note
+import com.mock.application.model.User
 
 interface NoteDao {
     suspend fun create(note: Note, user: User): Note?

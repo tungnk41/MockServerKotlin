@@ -18,8 +18,8 @@ fun Application.configureAuthentication() {
         jwt("auth-jwt") {
             verifier(tokenManager.verifier)
             validate { credential ->
-                credential.payload.getClaim("userId")?.asInt()?.let {
-                    val user = userDAO.findById(it)
+                credential.payload.getClaim("username").asString()?.let {
+                    val user = userDAO.findByUsername(it)
                     user?.let {
                         UserPrincipal(user)
                     }
