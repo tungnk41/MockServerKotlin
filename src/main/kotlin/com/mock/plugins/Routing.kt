@@ -1,26 +1,22 @@
 package com.mock.plugins
 
 
-import com.mock.routes.auth
-import com.mock.routes.note
-import io.ktor.server.application.*
-
-
+import com.mock.application.routes.authRoute
+import com.mock.application.routes.noteRoute
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
-import io.ktor.server.config.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
-fun Application.configureRouting(config: ApplicationConfig) {
+fun Application.configureRouting() {
 
     routing {
         get("/") {
-            call.respondText("Hello World!")
+            call.respondText("MockServer")
         }
         authenticate("auth-jwt") {
-            note(config)
+            noteRoute()
         }
-        auth(config)
+        authRoute()
     }
 }

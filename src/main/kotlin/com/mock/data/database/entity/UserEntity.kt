@@ -1,10 +1,6 @@
-package com.mock.models
+package com.mock.data.database.entity
 
-import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Table
-
-@Serializable
-data class User(val id: Int = -1, val username: String = "", val password: String = "")
 
 object UserEntity: Table("User"){
     val id = integer("id").autoIncrement()

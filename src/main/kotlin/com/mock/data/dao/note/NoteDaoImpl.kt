@@ -1,9 +1,9 @@
 package com.mock.dao.user
 
-import com.mock.dao.DatabaseFactory.query
-import com.mock.models.Note
-import com.mock.models.NoteEntity
-import com.mock.models.User
+import com.mock.data.database.query
+import com.mock.application.models.Note
+import com.mock.application.models.User
+import com.mock.data.database.entity.NoteEntity
 import org.jetbrains.exposed.sql.*
 
 class NoteDaoImpl : NoteDao {
@@ -13,13 +13,30 @@ class NoteDaoImpl : NoteDao {
         content = row[NoteEntity.content],
     )
     override suspend fun create(note: Note, user: User): Note? = query{
-        println("#### " + note + " , " + user)
         val insertStatement = NoteEntity.insert {
-            it[NoteEntity.title] = note.title
-            it[NoteEntity.content] = note.content
-            it[NoteEntity.userId] = user.id
+            it[title] = note.title
+            it[content] = note.content
+            it[userId] = user.id
         }
         insertStatement.resultedValues?.singleOrNull()?.let(::resultRowMapping)
+    }
+
+    override suspend fun deleteById(noteId: Int, user: User): Boolean = query {
+        NoteEntity.deleteWhere { NoteEntity.id eq noteId } > 0
+    }
+
+    override suspend fun updateById(noteId: Int,note: Note, user: User): Boolean = query {
+        NoteEntity.update({ NoteEntity.id eq noteId }) {
+            it[title] = note.title
+            it[content] = note.content
+        } > 0
+    }
+
+    override suspend fun findById(noteId: Int, user: User): Note? = query{
+        NoteEntity
+            .select { NoteEntity.id eq noteId }
+            .map(::resultRowMapping)
+            .singleOrNull()
     }
 
     override suspend fun findByTitle(title: String, user: User): List<Note>? = query {
@@ -34,5 +51,3 @@ class NoteDaoImpl : NoteDao {
             .map(::resultRowMapping)
     }
 }
-
-val noteDAO = NoteDaoImpl()

@@ -1,29 +1,28 @@
 package com.mock.plugins
 
-import com.auth0.jwt.JWT
-import com.auth0.jwt.algorithms.Algorithm
+import com.mock.application.auth.TokenManager
+import com.mock.application.auth.principal.UserPrincipal
+import com.mock.data.dao.user.UserDao
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
-import io.ktor.server.config.*
 import io.ktor.server.response.*
-import io.ktor.server.sessions.*
+import org.koin.ktor.ext.inject
 
-fun Application.configureAuthentication(config: ApplicationConfig) {
-    val secret = config.property("jwt.secret").getString()
+fun Application.configureAuthentication() {
+    val tokenManager by inject<TokenManager>()
+    val userDAO by inject<UserDao>()
+
     install(Authentication) {
         jwt("auth-jwt") {
-            verifier(
-                JWT
-                    .require(Algorithm.HMAC256(secret))
-                    .build()
-            )
+            verifier(tokenManager.verifier)
             validate { credential ->
-                if (credential.payload.getClaim("username").asString() != "") {
-                    JWTPrincipal(credential.payload)
-                } else {
-                    null
+                credential.payload.getClaim("userId")?.asInt()?.let {
+                    val user = userDAO.findById(it)
+                    user?.let {
+                        UserPrincipal(user)
+                    }
                 }
             }
             challenge { _, _ ->

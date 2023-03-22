@@ -1,11 +1,6 @@
-package com.mock.models
+package com.mock.data.database.entity
 
-import com.mock.models.UserEntity.references
-import kotlinx.serialization.Serializable
-import org.jetbrains.exposed.sql.*
-
-@Serializable
-data class Note(val id: Int = -1, val title: String = "", val content: String = "")
+import org.jetbrains.exposed.sql.Table
 
 object NoteEntity: Table("Note"){
     val id = integer("id").autoIncrement()

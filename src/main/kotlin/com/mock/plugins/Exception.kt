@@ -23,7 +23,7 @@ fun Application.configureException() {
                 is AssertionError -> {
                     call.application.environment.log.info(cause.message)
                     call.respondText(
-                        text = transformException(cause.message, HttpStatusCode.BadRequest.value),
+                        text = transformException("AssertionError: ${cause.message}", HttpStatusCode.BadRequest.value),
                         status = HttpStatusCode.BadRequest,
                         contentType = ContentType("application","json")
                     )
@@ -31,7 +31,7 @@ fun Application.configureException() {
                 is SecurityException -> {
                     call.application.environment.log.info(cause.message)
                     call.respondText(
-                        text = transformException("You are a bad guy", HttpStatusCode.Forbidden.value),
+                        text = transformException("SecurityException: ${cause.message}", HttpStatusCode.Forbidden.value),
                         status = HttpStatusCode.Forbidden,
                         contentType = ContentType("application","json")
                     )
@@ -39,7 +39,7 @@ fun Application.configureException() {
                 is SQLException -> {
                     call.application.environment.log.info(cause.message)
                     call.respondText(
-                        text = transformException("duplicate key value violates unique constraint.", HttpStatusCode.BadRequest.value),
+                        text = transformException("SQLException: ${cause.message}", HttpStatusCode.BadRequest.value),
                         status = HttpStatusCode.Forbidden,
                         contentType = ContentType("application","json")
                     )
@@ -47,7 +47,7 @@ fun Application.configureException() {
                 is NotFoundException -> {
                     call.application.environment.log.info(cause.message)
                     call.respondText(
-                        text = transformException(cause.message, HttpStatusCode.NotFound.value),
+                        text = transformException("NotFoundException: ${cause.message}", HttpStatusCode.NotFound.value),
                         status = HttpStatusCode.NotFound,
                         contentType = ContentType("application","json")
                     )
@@ -55,7 +55,7 @@ fun Application.configureException() {
                 is Exception ->{
                     call.application.environment.log.error(cause.message)
                     call.respondText(
-                        text = transformException(cause.message, HttpStatusCode.InternalServerError.value),
+                        text = transformException("Exception: ${cause.message}", HttpStatusCode.InternalServerError.value),
                         status = HttpStatusCode.InternalServerError,
                         contentType = ContentType("application","json")
                     )

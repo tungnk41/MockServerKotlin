@@ -1,8 +1,9 @@
-package com.mock.routes
+package com.mock.application.routes
 
-import com.mock.models.Note
-import com.mock.models.User
-import com.mock.services.noteService
+import com.mock.application.auth.principal.UserPrincipal
+import com.mock.application.models.Note
+import com.mock.application.models.User
+import com.mock.application.controller.noteController
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -12,7 +13,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
-fun Route.note(config: ApplicationConfig) {
+fun Route.noteRoute() {
 
     route("note") {
         get("/title") {
@@ -20,10 +21,10 @@ fun Route.note(config: ApplicationConfig) {
                 "Missing title",
                 status = HttpStatusCode.BadRequest
             )
-            val principal = call.principal<JWTPrincipal>()
+            val principal = call.principal<UserPrincipal>()
             principal?.let {
-                val user = createUserSessionFromPrincipal(principal)
-                val notes = noteService.findByTitle(title, user) ?: return@get call.respondText(
+                val user = principal.user
+                val notes = noteController.findByTitle(title, user) ?: return@get call.respondText(
                     "No Note with title $title",
                     status = HttpStatusCode.NotFound
                 )
@@ -34,10 +35,10 @@ fun Route.note(config: ApplicationConfig) {
 
         }
         get("/all") {
-            val principal = call.principal<JWTPrincipal>()
+            val principal = call.principal<UserPrincipal>()
             principal?.let {
-                val user = createUserSessionFromPrincipal(principal)
-                val notes = noteService.findAll(user) ?: return@get call.respondText(
+                val user = principal.user
+                val notes = noteController.findAll(user) ?: return@get call.respondText(
                     "Empty Notes",
                     status = HttpStatusCode.NotFound
                 )
@@ -48,10 +49,10 @@ fun Route.note(config: ApplicationConfig) {
         }
         post("/create") {
             val note = call.receive<Note>()
-            val principal = call.principal<JWTPrincipal>()
+            val principal = call.principal<UserPrincipal>()
             principal?.let {
-                val user = createUserSessionFromPrincipal(principal)
-                val newNote = noteService.create(note, user) ?: return@post call.respondText(
+                val user = principal.user
+                val newNote = noteController.create(note, user) ?: return@post call.respondText(
                     "Create Note fail ${note}",
                     status = HttpStatusCode.NotFound
                 )
@@ -61,10 +62,4 @@ fun Route.note(config: ApplicationConfig) {
             }
         }
     }
-}
-
-fun createUserSessionFromPrincipal(jwtPrincipal: JWTPrincipal): User{
-    val username = jwtPrincipal!!.payload.getClaim("username").asString()
-    val userId = jwtPrincipal!!.payload.getClaim("userId").asInt()
-    return User(id = userId,username = username)
 }
