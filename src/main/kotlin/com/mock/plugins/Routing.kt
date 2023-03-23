@@ -1,10 +1,8 @@
 package com.mock.plugins
 
-
-import com.google.api.client.http.HttpResponse
 import com.mock.application.routes.authRoute
 import com.mock.application.routes.noteRoute
-import io.ktor.http.*
+import com.mock.application.routes.userRoute
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.response.*
@@ -18,6 +16,7 @@ fun Application.configureRouting() {
         }
         authenticate("auth-jwt") {
             noteRoute()
+            userRoute()
         }
         authRoute()
     }

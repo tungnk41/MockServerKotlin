@@ -4,4 +4,4 @@ import com.mock.data.model.base.DataResponse
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class NoteResponse(val id: Int, val title: String, val content: String) : DataResponse()
+data class NoteResponse(val id: Int? = null, val title: String, val content: String) : DataResponse()

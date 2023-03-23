@@ -1,7 +1,6 @@
 package com.mock.data.model.response.auth
 
 import com.mock.data.model.base.DataResponse
-import com.mock.data.model.base.WrapDataResponse
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

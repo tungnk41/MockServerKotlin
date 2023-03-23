@@ -12,16 +12,15 @@ class UserController : KoinComponent {
     private val userDAO by inject<UserDao>()
     suspend fun createUser(username: String, password: String): User? {
         val encryptPassword = passwordEncryptor.encryptPassword(password)
-        val newUser = User(username = username, password = encryptPassword)
-        return userDAO.createUser(newUser)
+        return userDAO.createUser(User(username = username, password = encryptPassword))
     }
 
     suspend fun findUser(username: String, password: String): User? {
-        val response = userDAO.findByUsername(username = username)
-        return if (response != null && passwordEncryptor.validatePassword(
-                password,
-                response.password
-            )
-        ) response else null
+        val user = userDAO.findByUsername(username = username) ?: return null
+        return if (passwordEncryptor.validatePassword(password, user.password)) user else null
+    }
+
+    suspend fun findUserById(userId: Int): User? {
+        return userDAO.findById(userId = userId)
     }
 }

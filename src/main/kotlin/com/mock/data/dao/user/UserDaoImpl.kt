@@ -25,8 +25,9 @@ class UserDaoImpl : UserDao {
         UserEntity.selectAll().mapNotNull(::resultRowMapping)
     }
 
-    override suspend fun updateById(userId: Int, user: User): Boolean = query {
-        UserEntity.update(where = { UserEntity.id eq userId }) {
+    override suspend fun update(user: User): Boolean = query {
+        if (user.id == null || user.id < 0) return@query false
+        UserEntity.update(where = { UserEntity.id eq user.id }) {
             it[username] = username
             it[password] = password
         } > 0

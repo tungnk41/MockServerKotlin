@@ -22,7 +22,7 @@ fun Route.authRoute() {
             val request = call.receive<LoginRequest>()
             val response = authController.login(request)
             response?.let {
-                call.respond(WrapDataResponse(response))
+                call.respond(WrapDataResponse(data = response))
             } ?: kotlin.run { call.respond(HttpStatusCode.BadRequest) }
         }
 
@@ -31,7 +31,7 @@ fun Route.authRoute() {
             val request = call.receive<RegisterRequest>()
             val response = authController.register(request)
             response?.let {
-                call.respond(WrapDataResponse(response))
+                call.respond(WrapDataResponse(data = response))
             } ?: kotlin.run { call.respond(HttpStatusCode.BadRequest) }
 
         }
@@ -40,7 +40,7 @@ fun Route.authRoute() {
             val request = call.receive<RefreshTokenRequest>()
             val response = authController.refreshToken(request)
             response?.let {
-                call.respond(WrapDataResponse(response))
+                call.respond(WrapDataResponse(data = response))
             } ?: kotlin.run { call.respond(HttpStatusCode.Unauthorized) }
         }
     }
