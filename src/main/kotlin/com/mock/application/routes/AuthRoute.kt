@@ -29,7 +29,10 @@ fun Route.authRoute() {
             val request = call.receive<RegisterRequest>()
             val response = authController.register(request)
             call.respond(response)
+        }
 
+        post("/logout") {
+            call.respond(HttpStatusCode.OK)
         }
 
         post("/refresh-token") {
