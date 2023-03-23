@@ -9,3 +9,5 @@ object NoteEntity: Table("Note"){
     val userId = integer("user_id").references(UserEntity.id)
     override val primaryKey = PrimaryKey(id)
 }
+
+data class Note(val id: Int? = null, val title: String = "", val content: String = "")

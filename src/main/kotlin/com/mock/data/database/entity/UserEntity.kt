@@ -1,5 +1,6 @@
 package com.mock.data.database.entity
 
+import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Table
 
 object UserEntity: Table("User"){
@@ -8,3 +9,5 @@ object UserEntity: Table("User"){
     val password = varchar("password", 64)
     override val primaryKey = PrimaryKey(id)
 }
+
+data class User(val id: Int? = null, val username: String = "", val password: String = "")

@@ -1,5 +1,8 @@
 package com.mock.plugins
 
+import com.auth0.jwt.exceptions.JWTDecodeException
+import com.auth0.jwt.exceptions.SignatureVerificationException
+import com.auth0.jwt.exceptions.TokenExpiredException
 import com.mock.application.auth.TokenManager
 import com.mock.application.auth.principal.UserPrincipal
 import com.mock.data.dao.user.UserDao
@@ -18,18 +21,34 @@ fun Application.configureAuthentication() {
         jwt("auth-jwt") {
             verifier(tokenManager.verifier)
             validate { credential ->
-                credential.payload.getClaim("username").asString()?.let {
-                    val user = userDAO.findByUsername(it)
+                val userId = credential.payload.getClaim("userId").asInt()
+                userId?.let {
+                    val user = userDAO.findById(userId)
                     user?.let {
                         UserPrincipal(user)
                     }
                 }
             }
             challenge { _, _ ->
-                call.respond(HttpStatusCode.Unauthorized, "Token is not valid or has expired")
+                val header = call.request.headers["Authorization"]
+                header?.let {
+                    if (it.isNotEmpty()) {
+                        try {
+                            if ((!it.contains("Bearer", true))) throw JWTDecodeException("")
+                            val jwt = it.replace("Bearer ", "")
+                            tokenManager.verifier.verify(jwt)
+                            ""
+                        } catch (e: TokenExpiredException) {
+                            call.respond(HttpStatusCode.Unauthorized,"TokenExpiredException: Token Expired")
+                        } catch (e: SignatureVerificationException) {
+                            call.respond(HttpStatusCode.BadRequest, "SignatureVerificationException: Failed to parse Access token")
+                        } catch (e: JWTDecodeException) {
+                            call.respond(HttpStatusCode.BadRequest, "JWTDecodeException: Failed to decode Access token")
+                        }
+                    } else call.respond(HttpStatusCode.BadRequest, "Access token not found")
+                } ?: call.respond(HttpStatusCode.Unauthorized, "No authorization header found")
+                call.respond(HttpStatusCode.Unauthorized)
             }
         }
     }
-
-
 }

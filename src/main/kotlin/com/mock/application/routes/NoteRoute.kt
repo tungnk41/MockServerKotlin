@@ -1,8 +1,8 @@
 package com.mock.application.routes
 
 import com.mock.application.auth.principal.UserPrincipal
-import com.mock.application.model.Note
 import com.mock.application.controller.noteController
+import com.mock.data.database.entity.Note
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*

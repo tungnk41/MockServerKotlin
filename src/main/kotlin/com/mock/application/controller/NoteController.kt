@@ -1,8 +1,8 @@
 package com.mock.application.controller
 
-import com.mock.application.model.Note
-import com.mock.application.model.User
 import com.mock.dao.user.NoteDao
+import com.mock.data.database.entity.Note
+import com.mock.data.database.entity.User
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 

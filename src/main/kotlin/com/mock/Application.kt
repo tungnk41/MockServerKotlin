@@ -24,7 +24,7 @@ fun Application.module() {
 
 enum class Environment(val value: String) {
     JWT_SECRET("jwt.secret"),
-    JWT_EXPIRE("jwt.expire"),
+    JWT_EXPIRED("jwt.expired"),
     DB_DRIVER("ktor.database.driver"),
     DB_PREFIX_URL("ktor.database.prefixUrl"),
     DB_HOST("ktor.database.host"),
@@ -37,7 +37,7 @@ var config = hashMapOf<Environment,String>()
 fun Application.parseEnvironment() {
     config  = hashMapOf(
         Environment.JWT_SECRET to environment.config.property(Environment.JWT_SECRET.value).getString(),
-        Environment.JWT_EXPIRE to environment.config.property(Environment.JWT_EXPIRE.value).getString(),
+        Environment.JWT_EXPIRED to environment.config.property(Environment.JWT_EXPIRED.value).getString(),
         Environment.DB_DRIVER to environment.config.property(Environment.DB_DRIVER.value).getString(),
         Environment.DB_PREFIX_URL to environment.config.property(Environment.DB_PREFIX_URL.value).getString(),
         Environment.DB_HOST to environment.config.property(Environment.DB_HOST.value).getString(),

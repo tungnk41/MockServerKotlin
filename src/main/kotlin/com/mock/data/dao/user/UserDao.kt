@@ -1,6 +1,7 @@
 package com.mock.data.dao.user
 
-import com.mock.application.model.User
+import com.mock.data.database.entity.User
+
 
 interface UserDao {
     suspend fun createUser(user: User): User?

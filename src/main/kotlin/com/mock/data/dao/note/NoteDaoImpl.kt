@@ -1,9 +1,9 @@
 package com.mock.dao.user
 
+import com.mock.data.database.entity.Note
 import com.mock.data.database.query
-import com.mock.application.model.Note
-import com.mock.application.model.User
 import com.mock.data.database.entity.NoteEntity
+import com.mock.data.database.entity.User
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 

@@ -1,11 +1,10 @@
 package com.mock.application.controller
 
 import com.mock.application.auth.TokenManager
-import com.mock.application.model.User
 import com.mock.data.model.request.LoginRequest
+import com.mock.data.model.request.RefreshTokenRequest
 import com.mock.data.model.request.RegisterRequest
-import com.mock.data.model.response.LoginResponse
-import com.mock.data.model.response.RegisterResponse
+import com.mock.data.model.response.auth.*
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -17,7 +16,7 @@ class AuthController: KoinComponent {
         val user = userController.findUser(loginRequest.username,loginRequest.password)
         return user?.let {
             val token = tokenManager.generateToken(user)
-             LoginResponse(user, token.access_token,token.refresh_token)
+             LoginResponse(UserResponse(id = user.id, username = user.username), token.accessToken,token.refreshToken)
         }
     }
 
@@ -25,7 +24,13 @@ class AuthController: KoinComponent {
         val user =  userController.createUser(registerRequest.username,registerRequest.password)
         return user?.let {
             val token = tokenManager.generateToken(user)
-            RegisterResponse(user, token.access_token,token.refresh_token)
+            RegisterResponse(UserResponse(id = user.id, username = user.username), token.accessToken,token.refreshToken)
         }
+    }
+
+    suspend fun refreshToken(refreshTokenRequest: RefreshTokenRequest): TokenResponse? {
+        val token = refreshTokenRequest.token
+        if (!tokenManager.isVerifiedToken(token) || !tokenManager.isRefreshToken(token) || tokenManager.isExpiredToken(token)) return null
+        return tokenManager.refreshToken(token)
     }
 }

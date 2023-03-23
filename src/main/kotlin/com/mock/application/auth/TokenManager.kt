@@ -5,42 +5,63 @@ import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import com.mock.Environment
 import com.mock.config
-import com.mock.application.model.User
-import com.mock.data.model.response.TokenResponse
+import com.mock.data.database.entity.User
+import com.mock.data.model.response.auth.TokenResponse
 import java.util.*
 
 class TokenManager {
 
+    companion object {
+        const val ACCESS_TOKEN = "ACCESS_TOKEN"
+        const val REFRESH_TOKEN = "REFRESH_TOKEN"
+    }
     private val secret = config[Environment.JWT_SECRET]
-    private val validityInMs: Long = 1200000L // 20 Minutes
-    private val refreshValidityInMs: Long = 3600000L * 24L * 30L // 30 days
+    private val tokenExpired = config[Environment.JWT_EXPIRED]?.toLong() ?: 900000 //15 Minutes
+    private val refreshTokenExpired: Long = tokenExpired + 1800000L //30 minutes
     private val algorithm = Algorithm.HMAC512(secret)
 
     val verifier: JWTVerifier = JWT
         .require(algorithm)
         .build()
 
-    fun isTokenVerified(token: String): Boolean {
+    fun isVerifiedToken(token: String): Boolean {
         return verifier.verify(token).claims["userId"] != null && verifier.verify(token).claims["username"] != null && verifier.verify(token).claims["tokenType"] != null
     }
 
-    fun isTokenExpired(token: String): Boolean {
-        return verifier.verify(token).expiresAt.after(Calendar.getInstance().time)
+    fun isExpiredToken(token: String): Boolean {
+        return verifier.verify(token).expiresAt.before(Calendar.getInstance().time)
+    }
+
+    fun isRefreshToken(token: String) : Boolean {
+        return verifier.verify(token).claims["tokenType"]?.asString() == REFRESH_TOKEN
+    }
+
+    fun isAccessToken(token: String) : Boolean {
+        return verifier.verify(token).claims["tokenType"]?.asString() == ACCESS_TOKEN
     }
 
     /**
      * Produce token and refresh token for this combination of User and Account
      */
     fun generateToken(user: User) = TokenResponse(
-        createAccessToken(user, getTokenExpiration()),
-        createRefreshToken(user, getTokenExpiration(refreshValidityInMs))
+        createAccessToken(user, generateTokenExpiration(tokenExpired)),
+        createRefreshToken(user, generateTokenExpiration(refreshTokenExpired))
     )
+
+    fun refreshToken(token: String) : TokenResponse?{
+        val userId = verifier.verify(token).claims["userId"]?.asInt()
+        val username = verifier.verify(token).claims["username"]?.asString()
+        if (userId == null || username == null) return null
+        val accessToken = createAccessToken(User(id = userId, username = username), generateTokenExpiration(tokenExpired))
+        val refreshToken = createRefreshToken(User(id = userId, username = username), generateTokenExpiration(refreshTokenExpired))
+        return TokenResponse(accessToken, refreshToken)
+    }
 
     private fun createAccessToken(user: User, expiration: Date) = JWT.create()
         .withSubject("Authentication")
         .withClaim("userId", user.id)
         .withClaim("username", user.username)
-        .withClaim("tokenType", "accessToken")
+        .withClaim("tokenType", ACCESS_TOKEN)
         .withExpiresAt(expiration)
         .sign(algorithm)
 
@@ -48,12 +69,12 @@ class TokenManager {
         .withSubject("Authentication")
         .withClaim("userId", user.id)
         .withClaim("username", user.username)
-        .withClaim("tokenType", "refreshToken")
+        .withClaim("tokenType", REFRESH_TOKEN)
         .withExpiresAt(expiration)
         .sign(algorithm)
 
     /**
      * Calculate the expiration Date based on current time + the given validity
      */
-    private fun getTokenExpiration(validity: Long = validityInMs) = Date(System.currentTimeMillis() + validity)
+    private fun generateTokenExpiration(expiredInMillis: Long = 0) = Date(System.currentTimeMillis() + expiredInMillis)
 }
