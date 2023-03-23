@@ -29,8 +29,13 @@ class AuthController: KoinComponent {
     }
 
     suspend fun refreshToken(refreshTokenRequest: RefreshTokenRequest): TokenResponse? {
-        val token = refreshTokenRequest.token
-        if (!tokenManager.isVerifiedToken(token) || !tokenManager.isRefreshToken(token) || tokenManager.isExpiredToken(token)) return null
-        return tokenManager.refreshToken(token)
+        try {
+            val token = refreshTokenRequest.token
+            if (!tokenManager.isVerifiedToken(token) || !tokenManager.isRefreshToken(token) || tokenManager.isExpiredToken(token)) return null
+            return tokenManager.refreshToken(token)
+        }
+        catch (e: Exception) {
+            return null
+        }
     }
 }

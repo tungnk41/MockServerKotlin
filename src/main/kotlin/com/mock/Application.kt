@@ -8,8 +8,6 @@ import org.koin.ktor.ext.inject
 
 fun main(args: Array<String>): Unit = EngineMain.main(args)
 
-@Suppress("unused") // Referenced in application.conf
-@kotlin.jvm.JvmOverloads
 fun Application.module() {
     val databaseFactory by inject<DatabaseFactory>()
     parseEnvironment()

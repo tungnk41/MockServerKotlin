@@ -14,10 +14,10 @@ fun Application.configureRouting() {
         get("/") {
             call.respondText("MockServer")
         }
+        authRoute()
         authenticate("auth-jwt") {
             noteRoute()
             userRoute()
         }
-        authRoute()
     }
 }

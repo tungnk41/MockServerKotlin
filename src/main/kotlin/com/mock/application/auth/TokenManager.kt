@@ -8,6 +8,7 @@ import com.mock.config
 import com.mock.data.database.entity.User
 import com.mock.data.model.response.auth.TokenResponse
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class TokenManager {
 
@@ -16,8 +17,8 @@ class TokenManager {
         const val REFRESH_TOKEN = "REFRESH_TOKEN"
     }
     private val secret = config[Environment.JWT_SECRET]
-    private val tokenExpired = config[Environment.JWT_EXPIRED]?.toLong() ?: 900000 //15 Minutes
-    private val refreshTokenExpired: Long = tokenExpired + 1800000L //30 minutes
+    private val tokenExpired = config[Environment.JWT_EXPIRED]?.toLong() ?: TimeUnit.SECONDS.toMillis(15) //15 Minutes
+    private val refreshTokenExpired: Long = tokenExpired + TimeUnit.SECONDS.toMillis(30) //30 minutes
     private val algorithm = Algorithm.HMAC512(secret)
 
     val verifier: JWTVerifier = JWT
