@@ -28,7 +28,7 @@ docker run ^
 -e PORT=8080 ^
 -e DATABASE_PREFIX_URL=jdbc:postgresql:// ^
 -e DATABASE_DRIVER=org.postgresql.Driver ^
--e DATABASE_HOST=172.17.0.2 ^
+-e DATABASE_HOST=172.17.0.3 ^
 -e DATABASE_PORT=5432 ^
 -e DATABASE_USERNAME=postgres ^
 -e DATABASE_PASSWORD=123@123a ^

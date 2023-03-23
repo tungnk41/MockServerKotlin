@@ -17,8 +17,8 @@ class TokenManager {
         const val REFRESH_TOKEN = "REFRESH_TOKEN"
     }
     private val secret = config[Environment.JWT_SECRET]
-    private val tokenExpired = config[Environment.JWT_EXPIRED]?.toLong() ?: TimeUnit.SECONDS.toMillis(15) //15 Minutes
-    private val refreshTokenExpired: Long = tokenExpired + TimeUnit.SECONDS.toMillis(30) //30 minutes
+    private val tokenExpired = config[Environment.JWT_EXPIRED]?.toLong() ?: TimeUnit.MINUTES.toMillis(5) //15 Minutes
+    private val refreshTokenExpired: Long = tokenExpired + TimeUnit.MINUTES.toMillis(10) //30 minutes
     private val algorithm = Algorithm.HMAC512(secret)
 
     val verifier: JWTVerifier = JWT
