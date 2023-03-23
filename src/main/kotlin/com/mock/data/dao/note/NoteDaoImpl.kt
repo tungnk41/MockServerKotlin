@@ -14,48 +14,43 @@ class NoteDaoImpl : NoteDao {
         title = row[NoteEntity.title],
         content = row[NoteEntity.content],
     )
-    override suspend fun create(note: Note, user: User): Note? = query{
-        if (user.id == null) return@query null
+    override suspend fun create(note: Note, userId: Int): Note? = query{
         val insertStatement = NoteEntity.insert {
             it[title] = note.title
             it[content] = note.content
-            it[userId] = user.id
+            it[NoteEntity.userId] = userId
         }
         insertStatement.resultedValues?.singleOrNull()?.let(::resultRowMapping)
     }
 
-    override suspend fun deleteById(noteId: Int, user: User): Boolean = query {
-        if (user.id == null) return@query false
-        NoteEntity.deleteWhere { NoteEntity.id.eq( noteId) and NoteEntity.userId.eq(user.id) } > 0
+    override suspend fun deleteById(noteId: Int, userId: Int): Boolean = query {
+        NoteEntity.deleteWhere { NoteEntity.id.eq( noteId) and NoteEntity.userId.eq(userId) } > 0
     }
 
-    override suspend fun update(note: Note, user: User): Boolean = query {
-        if (user.id == null || note.id == null) return@query false
-        NoteEntity.update({ NoteEntity.id.eq( note.id) and NoteEntity.userId.eq(user.id) }) {
+    override suspend fun update(note: Note, userId: Int): Boolean = query {
+        if (note.id == null) return@query false
+        NoteEntity.update({ NoteEntity.id.eq( note.id) and NoteEntity.userId.eq(userId) }) {
             it[title] = note.title
             it[content] = note.content
         } > 0
     }
 
-    override suspend fun findById(noteId: Int, user: User): Note? = query{
-        if (user.id == null) return@query null
+    override suspend fun findById(noteId: Int, userId: Int): Note? = query{
         NoteEntity
-            .select { NoteEntity.id.eq( noteId) and NoteEntity.userId.eq(user.id) }
+            .select { NoteEntity.id.eq( noteId) and NoteEntity.userId.eq(userId) }
             .map(::resultRowMapping)
             .singleOrNull()
     }
 
-    override suspend fun findByTitle(title: String, user: User): List<Note>? = query {
-        if (user.id == null) return@query null
+    override suspend fun findByTitle(title: String, userId: Int): List<Note>? = query {
         NoteEntity
-            .select { NoteEntity.userId.eq(user.id) and  NoteEntity.title.eq(title) }
+            .select { NoteEntity.userId.eq(userId) and  NoteEntity.title.eq(title) }
             .map(::resultRowMapping)
     }
 
-    override suspend fun findAll(user: User): List<Note>? = query {
-        if (user.id == null) return@query null
+    override suspend fun findAll(userId: Int): List<Note>? = query {
         NoteEntity
-            .select { NoteEntity.userId.eq(user.id)}
+            .select { NoteEntity.userId.eq(userId)}
             .map(::resultRowMapping)
     }
 }

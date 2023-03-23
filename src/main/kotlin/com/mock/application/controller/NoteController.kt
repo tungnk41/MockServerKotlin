@@ -11,30 +11,30 @@ import org.koin.core.component.inject
 class NoteController: KoinComponent {
 
     private val noteDAO by inject<NoteDao>()
-    suspend fun create(request: NoteRequest, user: User): NoteResponse? {
-        val note = noteDAO.create(Note(title = request.title, content = request.content), user) ?: return null
+    suspend fun create(request: NoteRequest, userId: Int): NoteResponse? {
+        val note = noteDAO.create(Note(title = request.title, content = request.content), userId) ?: return null
         return mapToNoteResponse(note)
     }
 
-    suspend fun findByTitle(title: String, user: User): List<NoteResponse>? {
-        return noteDAO.findByTitle(title, user)?.map { mapToNoteResponse(it)  }
+    suspend fun findByTitle(title: String, userId: Int): List<NoteResponse>? {
+        return noteDAO.findByTitle(title, userId)?.map { mapToNoteResponse(it)  }
     }
 
-    suspend fun findById(noteId: Int, user: User): NoteResponse? {
-        val note = noteDAO.findById(noteId, user) ?: return null
+    suspend fun findById(noteId: Int, userId: Int): NoteResponse? {
+        val note = noteDAO.findById(noteId, userId) ?: return null
         return mapToNoteResponse(note)
     }
 
-    suspend fun deleteById(noteId: Int, user: User): Boolean {
-        return noteDAO.deleteById(noteId, user)
+    suspend fun deleteById(noteId: Int, userId: Int): Boolean {
+        return noteDAO.deleteById(noteId, userId)
     }
 
-    suspend fun update(noteRequest: NoteRequest, user: User): Boolean {
-        return noteDAO.update(Note(id = noteRequest.id, title = noteRequest.title, content = noteRequest.content), user)
+    suspend fun update(noteRequest: NoteRequest, userId: Int): Boolean {
+        return noteDAO.update(Note(id = noteRequest.id, title = noteRequest.title, content = noteRequest.content), userId)
     }
 
-    suspend fun findAll(user: User): List<NoteResponse>? {
-        return noteDAO.findAll(user)?.map { mapToNoteResponse(it) }
+    suspend fun findAll(userId: Int): List<NoteResponse>? {
+        return noteDAO.findAll(userId)?.map { mapToNoteResponse(it) }
     }
 
     private fun mapToNoteResponse(note: Note) : NoteResponse {

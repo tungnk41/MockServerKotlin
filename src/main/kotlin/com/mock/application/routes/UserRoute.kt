@@ -22,7 +22,7 @@ fun Route.userRoute() {
         get("/info") {
             val principal = call.principal<UserPrincipal>()
             principal?.let {
-                val userId = principal.user.id ?: return@get call.respond(HttpStatusCode.NotFound)
+                val userId = principal.userId
                 val response = userController.findUserById(userId = userId)
                 response?.let { call.respond(WrapDataResponse(data = UserResponse(id = response.id, username = response.username)))  } ?: kotlin.run {
                     call.respond(HttpStatusCode.NotFound)

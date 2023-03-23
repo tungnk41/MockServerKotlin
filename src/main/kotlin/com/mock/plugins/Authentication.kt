@@ -15,7 +15,6 @@ import org.koin.ktor.ext.inject
 
 fun Application.configureAuthentication() {
     val tokenManager by inject<TokenManager>()
-    val userDAO by inject<UserDao>()
 
     install(Authentication) {
         jwt("auth-jwt") {
@@ -23,11 +22,8 @@ fun Application.configureAuthentication() {
             validate { credential ->
                 val userId = credential.payload.getClaim("userId").asInt()
                 userId?.let {
-                    val user = userDAO.findById(userId)
-                    user?.let {
-                        UserPrincipal(user)
-                    }
-                }
+                    UserPrincipal(it)
+                } ?: null
             }
             challenge { _, _ ->
                 val header = call.request.headers["Authorization"]
