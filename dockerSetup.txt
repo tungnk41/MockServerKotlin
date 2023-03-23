@@ -1,0 +1,64 @@
+#Run in Command Promt
+
+docker network inspect bridge
+
+docker build -t server .
+##############################
+docker run ^
+-d ^
+--name remoteMockServer ^
+ -p 8082:8080 ^
+-e PORT=8080 ^
+-e DATABASE_PREFIX_URL=jdbc:postgresql:// ^
+-e DATABASE_DRIVER=org.postgresql.Driver ^
+-e DATABASE_HOST=containers-us-west-32.railway.app ^
+-e DATABASE_PORT=8006 ^
+-e DATABASE_USERNAME=postgres ^
+-e DATABASE_PASSWORD=haoEWTR2QWPemE8aUCzJ ^
+-e DATABASE_NAME=railway ^
+-e JWT_SECRET=secret@123 ^
+-e JWT_EXPIRED=30000 ^
+server
+
+#################################
+docker run ^
+-d ^
+--name mockServer ^
+ -p 8080:8080 ^
+-e PORT=8080 ^
+-e DATABASE_PREFIX_URL=jdbc:postgresql:// ^
+-e DATABASE_DRIVER=org.postgresql.Driver ^
+-e DATABASE_HOST=172.17.0.2 ^
+-e DATABASE_PORT=5432 ^
+-e DATABASE_USERNAME=postgres ^
+-e DATABASE_PASSWORD=123@123a ^
+-e DATABASE_NAME=postgres ^
+-e JWT_SECRET=secret@123 ^
+-e JWT_EXPIRED=30000 ^
+server
+
+#################################
+docker run ^
+-d ^
+--name renderServer^
+ -p 8080:8080 ^
+-e PORT=8080 ^
+-e DATABASE_PREFIX_URL=jdbc:postgresql:// ^
+-e DATABASE_DRIVER=org.postgresql.Driver ^
+-e DATABASE_HOST=dpg-cgd9pd82qv2aq5jnaok0-a ^
+-e DATABASE_PORT=5432 ^
+-e DATABASE_USERNAME=render ^
+-e DATABASE_PASSWORD=xkyvNa5hyDQexl7v1jYwsck2I3LhEEB4 ^
+-e DATABASE_NAME=mockdatabase ^
+-e JWT_SECRET=secret@123 ^
+-e JWT_EXPIRED=30000 ^
+server
+
+###################################
+docker run ^
+-d ^
+--name mockDatabase ^
+-p 5432:5432 ^
+-e POSTGRES_PASSWORD=123@123a ^
+postgres
+
