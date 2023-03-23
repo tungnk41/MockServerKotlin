@@ -1,8 +1,9 @@
 package com.mock.application.controller
 
 import com.mock.application.auth.PasswordEncryptor
-import com.mock.data.dao.user.UserDao
+import com.mock.data.database.dao.user.UserDao
 import com.mock.data.database.entity.User
+import com.mock.data.model.response.auth.UserResponse
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -10,17 +11,30 @@ class UserController : KoinComponent {
 
     private val passwordEncryptor by inject<PasswordEncryptor>()
     private val userDAO by inject<UserDao>()
-    suspend fun createUser(username: String, password: String): User? {
+    suspend fun createUser(username: String, password: String): UserResponse {
         val encryptPassword = passwordEncryptor.encryptPassword(password)
-        return userDAO.createUser(User(username = username, password = encryptPassword))
+        val response = userDAO.createUser(username = username, password = encryptPassword)
+        return createUserResponse(response)
     }
 
-    suspend fun findUser(username: String, password: String): User? {
-        val user = userDAO.findByUsername(username = username) ?: return null
-        return if (passwordEncryptor.validatePassword(password, user.password)) user else null
+    suspend fun loginUser(username: String, password: String): UserResponse {
+        val response = userDAO.findByUsername(username = username)
+        return response?.password?.let {
+            val isValidPassword = passwordEncryptor.validatePassword(password,response.password)
+            if (isValidPassword) createUserResponse(response) else UserResponse()
+        } ?: kotlin.run { UserResponse() }
     }
 
-    suspend fun findUserById(userId: Int): User? {
-        return userDAO.findById(userId = userId)
+    suspend fun findUserById(userId: Int): UserResponse {
+        val response = userDAO.findById(userId = userId)
+        return  createUserResponse(response)
+    }
+
+    private fun createUserResponse(user: User?): UserResponse {
+        return UserResponse().apply {
+            user?.let {
+                data = UserResponse.Data(user.id, user.username)
+            }
+        }
     }
 }

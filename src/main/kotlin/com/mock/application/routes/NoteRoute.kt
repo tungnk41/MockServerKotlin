@@ -2,8 +2,6 @@ package com.mock.application.routes
 
 import com.mock.application.auth.principal.UserPrincipal
 import com.mock.application.controller.NoteController
-import com.mock.data.model.base.WrapDataResponse
-import com.mock.data.model.base.WrapListDataResponse
 import com.mock.data.model.request.NoteRequest
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -24,8 +22,8 @@ fun Route.noteRoute() {
             val principal = call.principal<UserPrincipal>()
             principal?.let {
                 val userId = principal.userId
-                val notes = noteController.findByTitle(title, userId) ?: return@get call.respond(HttpStatusCode.NotFound)
-                call.respond(WrapListDataResponse(data = notes))
+                val response = noteController.findByTitle(title, userId)
+                call.respond(response)
             } ?: kotlin.run {
                 call.respond(HttpStatusCode.BadRequest)
             }
@@ -35,8 +33,8 @@ fun Route.noteRoute() {
             val principal = call.principal<UserPrincipal>()
             principal?.let {
                 val userId = principal.userId
-                val note = noteController.findById(id, userId) ?: return@get call.respond(HttpStatusCode.NotFound)
-                call.respond(WrapDataResponse(data = note))
+                val response = noteController.findById(id, userId)
+                call.respond(response)
             } ?: kotlin.run {
                 call.respond(HttpStatusCode.BadRequest)
             }
@@ -56,8 +54,8 @@ fun Route.noteRoute() {
             val principal = call.principal<UserPrincipal>()
             principal?.let {
                 val userId = principal.userId
-                val notes = noteController.findAll(userId) ?: return@get call.respond(HttpStatusCode.NotFound)
-                call.respond(WrapListDataResponse(data = notes))
+                val response = noteController.findAll(userId)
+                call.respond(response)
             } ?: kotlin.run {
                 call.respond(HttpStatusCode.BadRequest)
             }
@@ -67,8 +65,8 @@ fun Route.noteRoute() {
             val principal = call.principal<UserPrincipal>()
             principal?.let {
                 val userId = principal.userId
-                val note = noteController.create(request, userId) ?: return@post call.respond(HttpStatusCode.NotFound)
-                call.respond(WrapDataResponse(data = note))
+                val response = noteController.create(request, userId)
+                call.respond(response)
             } ?: kotlin.run {
                 call.respond(HttpStatusCode.BadRequest)
             }

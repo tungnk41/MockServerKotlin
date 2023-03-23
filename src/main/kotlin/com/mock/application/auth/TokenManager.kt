@@ -44,32 +44,32 @@ class TokenManager {
     /**
      * Produce token and refresh token for this combination of User and Account
      */
-    fun generateToken(user: User) = TokenResponse(
-        createAccessToken(user, generateTokenExpiration(tokenExpired)),
-        createRefreshToken(user, generateTokenExpiration(refreshTokenExpired))
+    fun generateToken(userId: Int, username: String) = TokenResponse.Data(
+        createAccessToken(userId,username, generateTokenExpiration(tokenExpired)),
+        createRefreshToken(userId,username, generateTokenExpiration(refreshTokenExpired))
     )
 
-    fun refreshToken(token: String) : TokenResponse?{
+    fun refreshToken(token: String) : TokenResponse.Data?{
         val userId = verifier.verify(token).claims["userId"]?.asInt()
         val username = verifier.verify(token).claims["username"]?.asString()
         if (userId == null || username == null) return null
-        val accessToken = createAccessToken(User(id = userId, username = username), generateTokenExpiration(tokenExpired))
-        val refreshToken = createRefreshToken(User(id = userId, username = username), generateTokenExpiration(refreshTokenExpired))
-        return TokenResponse(accessToken, refreshToken)
+        val accessToken = createAccessToken(userId = userId, username = username, generateTokenExpiration(tokenExpired))
+        val refreshToken = createRefreshToken(userId = userId, username = username, generateTokenExpiration(refreshTokenExpired))
+        return TokenResponse.Data(accessToken, refreshToken)
     }
 
-    private fun createAccessToken(user: User, expiration: Date) = JWT.create()
+    private fun createAccessToken(userId: Int,username: String, expiration: Date) = JWT.create()
         .withSubject("Authentication")
-        .withClaim("userId", user.id)
-        .withClaim("username", user.username)
+        .withClaim("userId", userId)
+        .withClaim("username", username)
         .withClaim("tokenType", ACCESS_TOKEN)
         .withExpiresAt(expiration)
         .sign(algorithm)
 
-    private fun createRefreshToken(user: User, expiration: Date) = JWT.create()
+    private fun createRefreshToken(userId: Int,username: String, expiration: Date) = JWT.create()
         .withSubject("Authentication")
-        .withClaim("userId", user.id)
-        .withClaim("username", user.username)
+        .withClaim("userId", userId)
+        .withClaim("username", username)
         .withClaim("tokenType", REFRESH_TOKEN)
         .withExpiresAt(expiration)
         .sign(algorithm)

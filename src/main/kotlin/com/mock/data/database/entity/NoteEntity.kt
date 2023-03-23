@@ -10,4 +10,4 @@ object NoteEntity: Table("Note"){
     override val primaryKey = PrimaryKey(id)
 }
 
-data class Note(val id: Int? = null, val title: String = "", val content: String = "")
+data class Note(val id: Int, val title: String = "", val content: String = "")

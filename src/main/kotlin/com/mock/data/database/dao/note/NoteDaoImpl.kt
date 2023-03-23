@@ -14,10 +14,10 @@ class NoteDaoImpl : NoteDao {
         title = row[NoteEntity.title],
         content = row[NoteEntity.content],
     )
-    override suspend fun create(note: Note, userId: Int): Note? = query{
+    override suspend fun create(title: String, content: String, userId: Int): Note? = query{
         val insertStatement = NoteEntity.insert {
-            it[title] = note.title
-            it[content] = note.content
+            it[NoteEntity.title] = title
+            it[NoteEntity.content] = content
             it[NoteEntity.userId] = userId
         }
         insertStatement.resultedValues?.singleOrNull()?.let(::resultRowMapping)
@@ -27,11 +27,10 @@ class NoteDaoImpl : NoteDao {
         NoteEntity.deleteWhere { NoteEntity.id.eq( noteId) and NoteEntity.userId.eq(userId) } > 0
     }
 
-    override suspend fun update(note: Note, userId: Int): Boolean = query {
-        if (note.id == null) return@query false
-        NoteEntity.update({ NoteEntity.id.eq( note.id) and NoteEntity.userId.eq(userId) }) {
-            it[title] = note.title
-            it[content] = note.content
+    override suspend fun update(noteId: Int, title: String, content: String, userId: Int): Boolean = query {
+        NoteEntity.update({ NoteEntity.id.eq( noteId) and NoteEntity.userId.eq(userId) }) {
+            it[NoteEntity.title] = title
+            it[NoteEntity.content] = content
         } > 0
     }
 

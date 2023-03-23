@@ -10,4 +10,4 @@ object UserEntity: Table("User"){
     override val primaryKey = PrimaryKey(id)
 }
 
-data class User(val id: Int? = null, val username: String = "", val password: String = "")
+data class User(val id: Int, val username: String = "", val password: String = "")

@@ -24,9 +24,7 @@ fun Route.userRoute() {
             principal?.let {
                 val userId = principal.userId
                 val response = userController.findUserById(userId = userId)
-                response?.let { call.respond(WrapDataResponse(data = UserResponse(id = response.id, username = response.username)))  } ?: kotlin.run {
-                    call.respond(HttpStatusCode.NotFound)
-                }
+                call.respond(response)
             } ?: kotlin.run {
                 call.respond(HttpStatusCode.BadRequest)
             }
@@ -35,11 +33,7 @@ fun Route.userRoute() {
         post("/create") {
             val request = call.receive<UserRequest>()
             val response = userController.createUser(request.username,request.password)
-            response?.let {
-                call.respond(WrapDataResponse(data = UserResponse(id = response.id, username = response.username)))
-            } ?: kotlin.run {
-                call.respond(HttpStatusCode.BadRequest)
-            }
+            call.respond(response)
         }
     }
 }

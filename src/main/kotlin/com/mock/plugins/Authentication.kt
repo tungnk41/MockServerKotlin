@@ -5,7 +5,6 @@ import com.auth0.jwt.exceptions.SignatureVerificationException
 import com.auth0.jwt.exceptions.TokenExpiredException
 import com.mock.application.auth.TokenManager
 import com.mock.application.auth.principal.UserPrincipal
-import com.mock.data.dao.user.UserDao
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*

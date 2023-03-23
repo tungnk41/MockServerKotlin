@@ -1,4 +1,4 @@
-package com.mock.data.dao.user
+package com.mock.data.database.dao.user
 
 import com.mock.data.database.entity.User
 import com.mock.data.database.query
@@ -13,10 +13,10 @@ class UserDaoImpl : UserDao {
         password = row[UserEntity.password],
     )
 
-    override suspend fun createUser(user: User): User? = query{
+    override suspend fun createUser(username: String,password: String): User? = query{
         val insertStatement = UserEntity.insert {
-            it[username] = user.username
-            it[password] = user.password
+            it[UserEntity.username] = username
+            it[UserEntity.password] = password
         }
         insertStatement.resultedValues?.singleOrNull()?.let(::resultRowMapping)
     }
@@ -25,11 +25,10 @@ class UserDaoImpl : UserDao {
         UserEntity.selectAll().mapNotNull(::resultRowMapping)
     }
 
-    override suspend fun update(user: User): Boolean = query {
-        if (user.id == null || user.id < 0) return@query false
-        UserEntity.update(where = { UserEntity.id eq user.id }) {
-            it[username] = username
-            it[password] = password
+    override suspend fun update(userId: Int, username: String,password: String): Boolean = query {
+        UserEntity.update(where = { UserEntity.id eq userId }) {
+            it[UserEntity.username] = username
+            it[UserEntity.password] = password
         } > 0
     }
 
