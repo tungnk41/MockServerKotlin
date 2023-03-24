@@ -13,13 +13,14 @@ fun Application.module() {
     parseEnvironment()
 
     configureKoin()
-    configureAuthentication()
+    configureSecurity()
     configureSerialization()
     configureException()
     configureLogging()
     configureShutdown()
 
     configureWebsocket()
+    configureSession()
     configureRouting()
     databaseFactory.init()
 }

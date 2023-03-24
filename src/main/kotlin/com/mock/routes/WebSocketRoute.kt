@@ -1,34 +1,38 @@
 package com.mock.routes
 
 
-import com.mock.application.websocket.Connection
+import com.mock.application.websocket.RoomChat
+import com.mock.application.websocket.UserSocketSession
 import io.ktor.websocket.*
 import io.ktor.server.routing.*
+import io.ktor.server.sessions.*
 import io.ktor.server.websocket.*
-import java.util.*
+import kotlinx.coroutines.channels.consumeEach
 
 fun Route.webSocketRoute() {
-        val connections = Collections.synchronizedSet<Connection?>(LinkedHashSet())
+        val roomChat = RoomChat()
+
         webSocket("") {
-            println("Adding user!")
-            val thisConnection = Connection(this)
-            connections += thisConnection
+            val session = call.sessions.get<UserSocketSession>()
+            if(session == null) {
+                close(CloseReason(CloseReason.Codes.VIOLATED_POLICY, "No session."))
+                return@webSocket
+            }
+
             try {
-                send("You are connected! There are ${connections.count()} users here.")
-                for (frame in incoming) {
-                    frame as? Frame.Text ?: continue
-                    val receivedText = frame.readText()
-                    val textWithUsername = "[${thisConnection.name}]: $receivedText"
-                    connections.forEach {
-                        it.session.send(textWithUsername)
+                val userSocketSession = UserSocketSession(session.username,session.sessionId,this)
+                roomChat.addUser(userSocketSession)
+
+                // Listen for incoming messages using channel coroutine
+                incoming.consumeEach { frame ->
+                    if(frame is Frame.Text) {
+                        roomChat.handleAction(userSocketSession.sessionId,frame.readText())
                     }
                 }
             } catch (e: Exception) {
-                println(e.localizedMessage)
                 e.printStackTrace()
             } finally {
-                println("Removing $thisConnection!")
-                connections -= thisConnection
+
             }
         }
 }

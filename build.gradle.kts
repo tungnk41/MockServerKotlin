@@ -52,6 +52,7 @@ dependencies {
     implementation("io.ktor:ktor-server-auth:$ktor_version")
     implementation("io.ktor:ktor-server-auth-jwt:$ktor_version")
     implementation("io.ktor:ktor-server-status-pages:$ktor_version")
+    implementation("io.ktor:ktor-server-sessions:$ktor_version")
 
     implementation("com.google.code.gson:gson:$gson_version")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")

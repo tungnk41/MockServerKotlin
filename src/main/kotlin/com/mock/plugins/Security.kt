@@ -12,7 +12,7 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
 import org.koin.ktor.ext.inject
 
-fun Application.configureAuthentication() {
+fun Application.configureSecurity() {
     val tokenManager by inject<TokenManager>()
 
     install(Authentication) {
