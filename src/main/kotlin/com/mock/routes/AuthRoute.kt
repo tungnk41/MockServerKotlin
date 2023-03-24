@@ -33,10 +33,6 @@ fun Route.authRoute() {
             call.respond(response)
         }
 
-        post("/logout") {
-            call.respond(HttpStatusCode.OK)
-        }
-
         post("/refresh-token") {
             val request = call.receive<RefreshTokenRequest>()
             val response = authController.refreshToken(request)

@@ -32,5 +32,10 @@ fun Route.userRoute() {
             val response = userController.createUser(request.username,request.password)
             call.respond(response)
         }
+
+        post("/logout") {
+            call.respond(HttpStatusCode.OK)
+        }
+
     }
 }
