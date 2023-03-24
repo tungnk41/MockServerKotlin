@@ -63,15 +63,19 @@ dependencies {
 
 
     implementation("ch.qos.logback:logback-classic:$logback_version")
-
     implementation("io.ktor:ktor-server-call-logging:$ktor_version")
+
+    //Websocket
+    implementation("io.ktor:ktor-server-websockets:$ktor_version")
+//    implementation("io.ktor:ktor-network:$ktor_version")
+//    implementation("io.ktor:ktor-network-tls:$ktor_version")
 
     // Exposed
     implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
+    implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
 
     //Local Database H2
-    implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
     implementation("com.h2database:h2:$h2_version")
 
     // Hikari

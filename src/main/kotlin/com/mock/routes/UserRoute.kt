@@ -1,11 +1,8 @@
-package com.mock.application.routes
+package com.mock.routes
 
 import com.mock.application.auth.principal.UserPrincipal
 import com.mock.application.controller.UserController
-import com.mock.data.database.entity.Note
-import com.mock.data.model.base.WrapDataResponse
 import com.mock.data.model.request.UserRequest
-import com.mock.data.model.response.auth.UserResponse
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*

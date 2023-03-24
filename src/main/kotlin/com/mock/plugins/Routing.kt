@@ -1,8 +1,9 @@
 package com.mock.plugins
 
-import com.mock.application.routes.authRoute
-import com.mock.application.routes.noteRoute
-import com.mock.application.routes.userRoute
+import com.mock.routes.authRoute
+import com.mock.routes.noteRoute
+import com.mock.routes.userRoute
+import com.mock.routes.webSocketRoute
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.response.*
@@ -14,10 +15,16 @@ fun Application.configureRouting() {
         get("/") {
             call.respondText("MockServer")
         }
-        authRoute()
-        authenticate("auth-jwt") {
-            noteRoute()
-            userRoute()
+
+        route("/api/v1") {
+            authRoute()
+            authenticate("auth-jwt") {
+                noteRoute()
+                userRoute()
+            }
+        }
+        route("/socket") {
+            webSocketRoute()
         }
     }
 }

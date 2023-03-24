@@ -1,4 +1,4 @@
-package com.mock.application.routes
+package com.mock.routes
 
 import com.mock.application.auth.principal.UserPrincipal
 import com.mock.application.controller.NoteController

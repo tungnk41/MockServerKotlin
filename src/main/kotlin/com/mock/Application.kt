@@ -16,9 +16,11 @@ fun Application.module() {
     configureAuthentication()
     configureSerialization()
     configureException()
-    configureRouting()
     configureLogging()
     configureShutdown()
+
+    configureWebsocket()
+    configureRouting()
     databaseFactory.init()
 }
 

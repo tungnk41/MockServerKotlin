@@ -1,7 +1,6 @@
-package com.mock.application.routes
+package com.mock.routes
 
 import com.mock.application.controller.AuthController
-import com.mock.data.model.base.WrapDataResponse
 import com.mock.data.model.request.LoginRequest
 import com.mock.data.model.request.RefreshTokenRequest
 import com.mock.data.model.request.RegisterRequest
