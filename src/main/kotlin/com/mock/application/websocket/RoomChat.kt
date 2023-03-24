@@ -34,14 +34,15 @@ class RoomChat {
     }
 
     suspend fun handleAction(fromUserSessionId: String, message: String){
-        val action = if (message.startsWith("[ALL][MESSAGE]")) {
-            Action.SendMessageToAll(fromUserSessionId, message.replace("[ALL][MESSAGE]",""))
+        val action = if (message.startsWith("[ALL][MSG]")) {
+            Action.SendMessageToAll(fromUserSessionId, message.replace("[ALL][MSG]",""))
         }
-        else if (message.startsWith("[ALL][REMOVE]")) {
+        else if (message.startsWith("[ALL][CLOSE]")) {
             Action.RemoveAllUser
         }
         else{
-            Action.None
+            Action.SendMessageToAll(fromUserSessionId, message.replace("[ALL][MSG]",""))
+//            Action.None
         }
 
         when(action) {

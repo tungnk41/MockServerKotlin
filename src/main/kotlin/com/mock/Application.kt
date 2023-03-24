@@ -19,8 +19,8 @@ fun Application.module() {
     configureLogging()
     configureShutdown()
 
-    configureWebsocket()
     configureSession()
+    configureWebsocket()
     configureRouting()
     databaseFactory.init()
 }

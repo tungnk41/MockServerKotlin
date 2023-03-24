@@ -9,12 +9,11 @@ import io.ktor.util.*
 
 fun Application.configureSession() {
     install(Sessions) {
-        cookie<UserSocketSession>("SESSION")
+        cookie<UserSocketSession>("Session")
     }
 
     // Get session for current user
     intercept(Plugins) {
-
         if(call.sessions.get<UserSocketSession>() == null) {
             val username = call.parameters["username"] ?: "Guest"
             call.sessions.set(UserSocketSession(username = username, sessionId =  generateNonce())) // generate a session ID (nonce)
