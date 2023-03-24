@@ -18,6 +18,7 @@ fun Application.module() {
     configureException()
     configureRouting()
     configureLogging()
+    configureShutdown()
     databaseFactory.init()
 }
 
