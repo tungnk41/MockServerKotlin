@@ -22,7 +22,7 @@ fun Route.authRoute() {
             val response = authController.login(request)
             response?.let {
                 call.respond(response)
-            } ?: kotlin.run { call.response.status(HttpStatusCode.NotFound) }
+            } ?: kotlin.run { call.respond("The user does not exist") }
 
         }
 

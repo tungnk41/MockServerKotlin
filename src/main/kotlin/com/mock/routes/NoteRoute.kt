@@ -18,26 +18,26 @@ fun Route.noteRoute() {
 
     route("/note") {
 
-        get("/{id?}") {
-            val id = call.request.queryParameters.getOrFail<Int>("id")
+        get {
+            val id = call.parameters["id"]?.toInt() ?: return@get
             val principal = call.principal<UserPrincipal>()
             principal?.let {
                 val userId = principal.userId
                 val response = noteController.findById(id, userId)
                 call.respond(response)
             } ?: kotlin.run {
-                call.respond(HttpStatusCode.BadRequest)
+                call.respond("Principal empty")
             }
         }
-        delete("/{id?}") {
-            val id = call.request.queryParameters.getOrFail<Int>("id")
+        delete {
+            val id = call.parameters["id"]?.toInt() ?: return@delete
             val principal = call.principal<UserPrincipal>()
             principal?.let {
                 val userId = principal.userId
                 val response = noteController.deleteById(id, userId)
-                call.respond(if (response) HttpStatusCode.OK else HttpStatusCode.NotFound)
+                call.respond("Delete note is success")
             } ?: kotlin.run {
-                call.respond(HttpStatusCode.BadRequest)
+                call.respond("Principal empty")
             }
         }
         get("/all") {
@@ -47,7 +47,7 @@ fun Route.noteRoute() {
                 val response = noteController.findAll(userId)
                 call.respond(response)
             } ?: kotlin.run {
-                call.respond(HttpStatusCode.BadRequest)
+                call.respond("Principal empty")
             }
         }
         post("/create") {
@@ -58,7 +58,7 @@ fun Route.noteRoute() {
                 val response = noteController.create(request, userId)
                 call.respond(response)
             } ?: kotlin.run {
-                call.respond(HttpStatusCode.BadRequest)
+                call.respond("Principal empty")
             }
         }
         put("/edit") {
@@ -67,9 +67,9 @@ fun Route.noteRoute() {
             principal?.let {
                 val userId = principal.userId
                 val response = noteController.update(note, userId)
-                call.respond(if (response) HttpStatusCode.OK else HttpStatusCode.NotFound)
+                call.respond(response)
             } ?: kotlin.run {
-                call.respond(HttpStatusCode.BadRequest)
+                call.respond("Principal empty")
             }
         }
     }

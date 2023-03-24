@@ -23,7 +23,7 @@ fun Route.userRoute() {
                 val response = userController.findUserById(userId = userId)
                 call.respond(response)
             } ?: kotlin.run {
-                call.respond(HttpStatusCode.BadRequest)
+                call.respond("Principal empty")
             }
 
         }
