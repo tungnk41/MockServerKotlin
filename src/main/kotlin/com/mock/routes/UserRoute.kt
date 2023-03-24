@@ -33,7 +33,7 @@ fun Route.userRoute() {
             call.respond(response)
         }
 
-        post("/logout") {
+        get("/logout") {
             call.respond(HttpStatusCode.OK)
         }
 
