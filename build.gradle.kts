@@ -21,9 +21,6 @@ plugins {
     id("io.ktor.plugin") version "2.2.4"
 }
 
-group = "com.mock"
-version = "0.0.1"
-
 repositories {
     mavenCentral()
 }
@@ -40,9 +37,11 @@ compileTestKotlin.kotlinOptions {
 application {
     mainClass.set("com.mock.ApplicationKt")
 }
+
+//Change name shadow jar file
 ktor {
     fatJar {
-        archiveFileName.set("mockserver.jar")
+        archiveFileName.set("server.jar")
     }
 }
 
