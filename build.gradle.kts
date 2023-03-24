@@ -12,12 +12,13 @@ val jbcrypt_version: String by project
 val firebase_admin_version: String by project
 val commons_email_version: String by project
 val koin_version: String by project
+val h2_version: String by project
 
 plugins {
     application
     kotlin("jvm") version "1.6.10"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.6.20"
-    id("com.github.johnrengelman.shadow") version "6.1.0"
+    id("io.ktor.plugin") version "2.2.4"
 }
 
 group = "com.mock"
@@ -25,7 +26,6 @@ version = "0.0.1"
 
 repositories {
     mavenCentral()
-    jcenter()
 }
 
 val compileKotlin: KotlinCompile by tasks
@@ -39,18 +39,13 @@ compileTestKotlin.kotlinOptions {
 
 application {
     mainClass.set("com.mock.ApplicationKt")
-    project.setProperty("mainClassName", "com.mock.ApplicationKt")
-    val isDevelopment: Boolean = project.ext.has("development")
-    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }
-
-tasks{
-    shadowJar {
-        manifest {
-            attributes(Pair("Main-Class", "com.mock.ApplicationKt"))
-        }
+ktor {
+    fatJar {
+        archiveFileName.set("mockserver.jar")
     }
 }
+
 
 dependencies {
     implementation("io.ktor:ktor-server-core:$ktor_version")
@@ -69,10 +64,15 @@ dependencies {
 
     implementation("ch.qos.logback:logback-classic:$logback_version")
 
+    implementation("io.ktor:ktor-server-call-logging:$ktor_version")
+
     // Exposed
     implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
+
+    //Local Database H2
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
+    implementation("com.h2database:h2:$h2_version")
 
     // Hikari
     implementation("com.zaxxer:HikariCP:$hikaricp_version")

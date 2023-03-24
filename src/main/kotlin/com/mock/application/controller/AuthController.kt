@@ -14,7 +14,7 @@ class AuthController: KoinComponent {
     private val tokenManager by inject<TokenManager>()
     private val userController by inject<UserController>()
 
-    suspend fun login(loginRequest: LoginRequest): LoginResponse {
+    suspend fun login(loginRequest: LoginRequest): LoginResponse? {
         val response = userController.loginUser(username = loginRequest.username, password = loginRequest.password)
         return createLoginResponse(response.data,tokenManager)
     }
@@ -35,9 +35,9 @@ class AuthController: KoinComponent {
         }
     }
 
-    private fun createLoginResponse(userData: UserResponse.Data?, tokenManager: TokenManager) : LoginResponse {
-        return LoginResponse().apply {
-            userData?.let {
+    private fun createLoginResponse(userData: UserResponse.Data?, tokenManager: TokenManager) : LoginResponse? {
+        return userData?.let {
+            LoginResponse().apply {
                 val token = tokenManager.generateToken(it.id,it.username)
                 data = LoginResponse.Data(user = UserResponse.Data(id = it.id, username = it.username), token.accessToken,token.refreshToken)
             }

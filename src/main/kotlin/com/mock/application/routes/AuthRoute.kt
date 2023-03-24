@@ -21,7 +21,10 @@ fun Route.authRoute() {
         post("/login") {
             val request = call.receive<LoginRequest>()
             val response = authController.login(request)
-            call.respond(response)
+            response?.let {
+                call.respond(response)
+            } ?: kotlin.run { call.response.status(HttpStatusCode.NotFound) }
+
         }
 
 

@@ -16,16 +16,9 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class DatabaseFactory {
 
     fun init() {
-        val driver = config[Environment.DB_DRIVER]!!
-        val prefixUrl = config[Environment.DB_PREFIX_URL]
-        val host = config[Environment.DB_HOST]
-        val port = config[Environment.DB_PORT]
-        val username = config[Environment.DB_USER]
-        val password = config[Environment.DB_PASSWORD]
-        val database = config[Environment.DB_DATABASE]
+        var url = config[Environment.DB_URL]!!
+        var driver = config[Environment.DB_DRIVER]!!
 
-        val url = "$prefixUrl$host:$port/$database?user=$username&password=$password"
-        println(url)
         val connectionPool = createHikari(
             url = url,
             driver = driver,

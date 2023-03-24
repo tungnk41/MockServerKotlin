@@ -17,18 +17,8 @@ fun Route.noteRoute() {
     val noteController by inject<NoteController>()
 
     route("/note") {
-        get("/title/{title?}") {
-            val title = call.request.queryParameters.getOrFail<String>("title")
-            val principal = call.principal<UserPrincipal>()
-            principal?.let {
-                val userId = principal.userId
-                val response = noteController.findByTitle(title, userId)
-                call.respond(response)
-            } ?: kotlin.run {
-                call.respond(HttpStatusCode.BadRequest)
-            }
-        }
-        get("/id/{id?}") {
+
+        get("/{id?}") {
             val id = call.request.queryParameters.getOrFail<Int>("id")
             val principal = call.principal<UserPrincipal>()
             principal?.let {
@@ -39,7 +29,7 @@ fun Route.noteRoute() {
                 call.respond(HttpStatusCode.BadRequest)
             }
         }
-        delete("/id/{id?}") {
+        delete("/{id?}") {
             val id = call.request.queryParameters.getOrFail<Int>("id")
             val principal = call.principal<UserPrincipal>()
             principal?.let {
