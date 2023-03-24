@@ -9,7 +9,7 @@ import java.util.*
 
 fun Route.webSocketRoute() {
         val connections = Collections.synchronizedSet<Connection?>(LinkedHashSet())
-        webSocket("/chat") {
+        webSocket("") {
             println("Adding user!")
             val thisConnection = Connection(this)
             connections += thisConnection

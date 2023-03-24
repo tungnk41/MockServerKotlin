@@ -16,8 +16,8 @@ val h2_version: String by project
 
 plugins {
     application
-    kotlin("jvm") version "1.6.10"
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.6.20"
+    kotlin("jvm") version "1.8.10"
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.8.0"
     id("io.ktor.plugin") version "2.2.4"
 }
 
@@ -30,11 +30,11 @@ repositories {
 
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
-    jvmTarget = "1.8"
+    jvmTarget = "11"
 }
 val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
-    jvmTarget = "1.8"
+    jvmTarget = "11"
 }
 
 application {
