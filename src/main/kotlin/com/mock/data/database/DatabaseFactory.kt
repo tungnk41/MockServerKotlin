@@ -16,12 +16,12 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class DatabaseFactory {
 
     fun init() {
-        var url = config[Environment.DB_URL]!!
-        var driver = config[Environment.DB_DRIVER]!!
+        var database_url = config[Environment.DB_URL]!!
+        var database_driver = config[Environment.DB_DRIVER]!!
 
         val connectionPool = createHikari(
-            url = url,
-            driver = driver,
+            url = database_url,
+            driver = database_driver,
         )
         Database.connect(connectionPool)
         transaction {

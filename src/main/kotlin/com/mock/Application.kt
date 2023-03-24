@@ -40,22 +40,22 @@ enum class Environment(val value: String) {
 var config = hashMapOf<Environment,String>()
 fun Application.parseEnvironment() {
     try {
-        var url = ""
+        var database_url = ""
 //        url = environment.config.property(Environment.DB_URL.value).getString()
-        if (url.isNullOrEmpty()) {
-            val prefixUrl = environment.config.property(Environment.DB_PREFIX_URL.value).getString()
-            val host = environment.config.property(Environment.DB_HOST.value).getString()
-            val port = environment.config.property(Environment.DB_PORT.value).getString()
-            val username = environment.config.property(Environment.DB_USERNAME.value).getString()
-            val password = environment.config.property(Environment.DB_PASSWORD.value).getString()
-            val database = environment.config.property(Environment.DB_DATABASE_NAME.value).getString()
-            url = "$prefixUrl$host:$port/$database?user=$username&password=$password"
+        if (database_url.isNullOrEmpty()) {
+            val database_prefixUrl = environment.config.property(Environment.DB_PREFIX_URL.value).getString()
+            val database_host = environment.config.property(Environment.DB_HOST.value).getString()
+            val database_port = environment.config.property(Environment.DB_PORT.value).getString()
+            val database_username = environment.config.property(Environment.DB_USERNAME.value).getString()
+            val database_password = environment.config.property(Environment.DB_PASSWORD.value).getString()
+            val database_name = environment.config.property(Environment.DB_DATABASE_NAME.value).getString()
+            database_url = "$database_prefixUrl$database_host:$database_port/$database_name?user=$database_username&password=$database_password"
         }
         config = hashMapOf(
             Environment.JWT_SECRET to environment.config.property(Environment.JWT_SECRET.value).getString(),
             Environment.JWT_EXPIRED to environment.config.property(Environment.JWT_EXPIRED.value).getString(),
             Environment.DB_DRIVER to environment.config.property(Environment.DB_DRIVER.value).getString(),
-            Environment.DB_URL to url,
+            Environment.DB_URL to database_url,
 
         )
     } catch (e: Exception) {
