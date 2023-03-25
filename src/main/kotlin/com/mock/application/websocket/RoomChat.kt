@@ -1,65 +1,89 @@
 package com.mock.application.websocket
 
 import io.ktor.websocket.*
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.util.concurrent.ConcurrentHashMap
 
-sealed class Action {
-    data class SendMessageToAll(val fromUserSessionId: String,val message: String): Action()
-    data class SendMessageToUser(val fromUserSessionId: String, val toUserSessionId: String, val message: String): Action()
-    data class RemoveUser(val userSessionId: String): Action()
-    object RemoveAllUser: Action()
-    object None: Action()
-}
+class RoomChat : KoinComponent {
+    private val sessionManager by inject<SessionManager>()
+    private val listUser = ConcurrentHashMap<Int, UserSessionInfo>(hashMapOf())
+    private val listBlockedUser = ConcurrentHashMap<Int, UserSessionInfo>(hashMapOf())
 
-class RoomChat {
-    private val userConnections = ConcurrentHashMap<String,UserSocketSession>(hashMapOf())
 
-    private suspend fun sendMessageToAll(fromUser: UserSocketSession, message: String) {
-        val receivedMessage = "${fromUser.username} : $message"
-        userConnections.forEach { (userSessionId, userSocketSession) ->
-            userSocketSession.session?.send(receivedMessage)
+    fun isUserBlocked(user: UserSessionInfo): Boolean {
+        return listBlockedUser.containsKey(user.userId)
+    }
+
+    suspend fun addUser(user: UserSessionInfo, session: DefaultWebSocketSession) {
+        if (listUser.containsKey(user.userId)) {
+            listUser[user.userId]?.let { sessionManager.removeSession(it.sessionId) }
+            listUser.remove(user.userId)
+        }
+        listUser[user.userId] = user
+        sessionManager.addSession(user.sessionId, session)
+    }
+
+    suspend fun removeUserById(userId: Int) {
+        if (listUser.containsKey(userId)) {
+            listUser[userId]?.sessionId?.let { sessionManager.removeSession(it) }
+            listUser.remove(userId)
         }
     }
 
-    suspend fun addUser(user: UserSocketSession) {
-        if (!userConnections.containsKey(user.sessionId)) {
-            userConnections[user.sessionId] = user
+
+    suspend fun handleAction(userId: Int, message: String) {
+        listUser[userId]?.let {
+            when (val action = parseActionFromMsgStr(it, message)) {
+                is Action.SendMessageToAll -> {
+                    sendMessageToAll(action.userSessionInfoRequest, message = action.message)
+                }
+
+                is Action.DisconnectAll -> {
+                    disconnectAll(action.userSessionInfoSource)
+                }
+
+                else -> {
+                    return
+                }
+            }
         }
     }
 
-    suspend fun removeUser(user: UserSocketSession) {
-        if (userConnections.containsKey(user.sessionId)) {
-            userConnections.remove(user.sessionId)
-        }
-    }
-
-    suspend fun handleAction(fromUserSessionId: String, message: String){
-        val action = if (message.startsWith("[ALL][MSG]")) {
-            Action.SendMessageToAll(fromUserSessionId, message.replace("[ALL][MSG]",""))
-        }
-        else if (message.startsWith("[ALL][CLOSE]")) {
-            Action.RemoveAllUser
-        }
-        else{
-            Action.SendMessageToAll(fromUserSessionId, message.replace("[ALL][MSG]",""))
+    private fun parseActionFromMsgStr(userSessionInfo: UserSessionInfo, msg: String): Action {
+        val action = if (msg.startsWith("[ALL][MSG]")) {
+            Action.SendMessageToAll(userSessionInfo, msg.replace("[ALL][MSG]", ""))
+        } else if (msg.startsWith("[ALL][CLOSE]")) {
+            Action.DisconnectAll(userSessionInfo)
+        } else {
+            Action.SendMessageToAll(userSessionInfo, msg.replace("[ALL][MSG]", ""))
 //            Action.None
         }
+        return action
+    }
 
-        when(action) {
-            is Action.SendMessageToAll -> {
-                val user = userConnections[action.fromUserSessionId] ?: return
-                sendMessageToAll(fromUser = user, message = action.message)
-            }
-            is Action.RemoveAllUser -> {
-                userConnections.forEach {(K,V) ->
-                    V.session?.close()
-                }
-                userConnections.clear()
-            }
-            else -> {
-                return
-            }
+    private suspend fun sendMessageToAll(userSessionInfo: UserSessionInfo, message: String) {
+        val receivedMessage = "${userSessionInfo.username} : $message"
+        listUser.forEach { (userId, userSessionInfo) ->
+            val session = sessionManager.getSession(userSessionInfo.sessionId)
+            session?.send(receivedMessage)
         }
     }
 
+    private suspend fun disconnectAll(userSessionInfo: UserSessionInfo) {
+        listUser.forEach { (userId, userSessionInfo) ->
+            sessionManager.removeSession(userSessionInfo.sessionId)
+        }
+        listUser.clear()
+    }
+}
+
+
+sealed class Action {
+    data class SendMessageToAll(val userSessionInfoRequest: UserSessionInfo, val message: String) : Action()
+    data class DisconnectUser(val userSessionInfoSource: UserSessionInfo, val userSessionInfoDes: UserSessionInfo) :
+        Action()
+
+    data class DisconnectAll(val userSessionInfoSource: UserSessionInfo) : Action()
+    object None : Action()
 }

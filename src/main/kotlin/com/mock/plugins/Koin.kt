@@ -15,6 +15,7 @@ fun Application.configureKoin() {
             DaoModule,
             DatabaseModule,
             ControllerModule,
+            WebSocketModule,
         )
     }
 }

@@ -1,6 +1,5 @@
 package com.mock.data.database.entity
 
-import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Table
 
 object UserEntity: Table("User"){

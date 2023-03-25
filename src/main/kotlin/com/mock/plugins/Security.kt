@@ -26,23 +26,12 @@ fun Application.configureSecurity() {
             }
             challenge { _, _ ->
                 val header = call.request.headers["Authorization"]
-                header?.let {
-                    if (it.isNotEmpty()) {
-                        try {
-                            if ((!it.contains("Bearer", true))) throw JWTDecodeException("")
-                            val jwt = it.replace("Bearer ", "")
-                            tokenManager.verifier.verify(jwt)
-                            ""
-                        } catch (e: TokenExpiredException) {
-                            call.respond(HttpStatusCode.Unauthorized,"TokenExpiredException: Token Expired")
-                        } catch (e: SignatureVerificationException) {
-                            call.respond(HttpStatusCode.BadRequest, "SignatureVerificationException: Failed to parse Access token")
-                        } catch (e: JWTDecodeException) {
-                            call.respond(HttpStatusCode.BadRequest, "JWTDecodeException: Failed to decode Access token")
-                        }
-                    } else call.respond(HttpStatusCode.BadRequest, "Access token not found")
-                } ?: call.respond(HttpStatusCode.Unauthorized, "No authorization header found")
-                call.respond(HttpStatusCode.Unauthorized)
+                if (header.isNullOrEmpty())  call.respond(HttpStatusCode.Unauthorized, "Access token not found")
+                else if ((!header.contains("Bearer", true)))  call.respond(HttpStatusCode.Unauthorized, "JWT cannot decode token")
+                else {
+                    val token = header.replace("Bearer ", "")
+                    tokenManager.verifyAuthentication(call,token)
+                }
             }
         }
     }

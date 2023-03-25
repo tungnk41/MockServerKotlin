@@ -52,6 +52,14 @@ fun Application.configureException() {
                         contentType = ContentType("application","json")
                     )
                 }
+                is BadRequestException -> {
+                    call.application.environment.log.error(cause.message)
+                    call.respondText(
+                        text = transformException("Exception: ${cause.message}", HttpStatusCode.BadRequest.value),
+                        status = HttpStatusCode.BadRequest,
+                        contentType = ContentType("application","json")
+                    )
+                }
                 is Exception ->{
                     call.application.environment.log.error(cause.message)
                     call.respondText(
