@@ -1,6 +1,7 @@
 package com.mock.application.websocket
 
 import io.ktor.websocket.*
+import kotlinx.coroutines.isActive
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.concurrent.ConcurrentHashMap
@@ -66,11 +67,16 @@ class RoomChat : KoinComponent {
         val receivedMessage = "${userSessionInfo.username} : $message"
         listUser.forEach { (userId, userSessionInfo) ->
             val session = sessionManager.getSession(userSessionInfo.sessionId)
-            session?.send(receivedMessage)
+            session?.let {
+                if (it.isActive) {
+                    session.send(receivedMessage)
+                }
+            }
         }
     }
 
     private suspend fun disconnectAll(userSessionInfo: UserSessionInfo) {
+        sendMessageToAll(userSessionInfo,"${userSessionInfo.username} request all to disconnect")
         listUser.forEach { (userId, userSessionInfo) ->
             sessionManager.removeSession(userSessionInfo.sessionId)
         }
