@@ -18,7 +18,10 @@ class RoomChat : KoinComponent {
 
     suspend fun addUser(user: UserSessionInfo, session: DefaultWebSocketSession) {
         if (listUser.containsKey(user.userId)) {
-            listUser[user.userId]?.let { sessionManager.removeSession(it.sessionId) }
+            listUser[user.userId]?.let {
+                sendGlobalMessage(it,"Connected from another device !")
+                sessionManager.removeSession(it.sessionId)
+            }
             listUser.remove(user.userId)
         }
         listUser[user.userId] = user
@@ -36,12 +39,12 @@ class RoomChat : KoinComponent {
     suspend fun handleAction(userId: Int, message: String) {
         listUser[userId]?.let {
             when (val action = parseActionFromMsgStr(it, message)) {
-                is Action.SendMessageToAll -> {
-                    sendMessageToAll(action.userSessionInfoRequest, message = action.message)
+                is Action.SendMessageGlobal -> {
+                    sendGlobalMessage(action.userSessionInfoRequest, message = action.message)
                 }
 
-                is Action.DisconnectAll -> {
-                    disconnectAll(action.userSessionInfoSource)
+                is Action.CloseRoom -> {
+                    close(action.userSessionInfoSource)
                 }
 
                 else -> {
@@ -52,19 +55,19 @@ class RoomChat : KoinComponent {
     }
 
     private fun parseActionFromMsgStr(userSessionInfo: UserSessionInfo, msg: String): Action {
-        val action = if (msg.startsWith("[ALL][MSG]")) {
-            Action.SendMessageToAll(userSessionInfo, msg.replace("[ALL][MSG]", ""))
-        } else if (msg.startsWith("[ALL][CLOSE]")) {
-            Action.DisconnectAll(userSessionInfo)
+        val action = if (msg.startsWith("[100]")) {
+            Action.SendMessageGlobal(userSessionInfo, msg.replace("[100]", ""))
+        } else if (msg.startsWith("[101]")) {
+            Action.CloseRoom(userSessionInfo)
         } else {
-            Action.SendMessageToAll(userSessionInfo, msg.replace("[ALL][MSG]", ""))
+            Action.SendMessageGlobal(userSessionInfo, msg.replace("[101]", ""))
 //            Action.None
         }
         return action
     }
 
-    private suspend fun sendMessageToAll(userSessionInfo: UserSessionInfo, message: String) {
-        val receivedMessage = "${userSessionInfo.username} : $message"
+    private suspend fun sendGlobalMessage(userSessionInfo: UserSessionInfo?, message: String) {
+        val receivedMessage = userSessionInfo?.let { "${userSessionInfo.username} : $message" } ?: message
         listUser.forEach { (userId, userSessionInfo) ->
             val session = sessionManager.getSession(userSessionInfo.sessionId)
             session?.let {
@@ -75,8 +78,8 @@ class RoomChat : KoinComponent {
         }
     }
 
-    private suspend fun disconnectAll(userSessionInfo: UserSessionInfo) {
-        sendMessageToAll(userSessionInfo,"${userSessionInfo.username} request all to disconnect")
+    suspend fun close(userSessionInfo: UserSessionInfo?) {
+        sendGlobalMessage(userSessionInfo," request room close !!")
         listUser.forEach { (userId, userSessionInfo) ->
             sessionManager.removeSession(userSessionInfo.sessionId)
         }
@@ -86,10 +89,10 @@ class RoomChat : KoinComponent {
 
 
 sealed class Action {
-    data class SendMessageToAll(val userSessionInfoRequest: UserSessionInfo, val message: String) : Action()
-    data class DisconnectUser(val userSessionInfoSource: UserSessionInfo, val userSessionInfoDes: UserSessionInfo) :
+    data class SendMessageGlobal(val userSessionInfoRequest: UserSessionInfo, val message: String) : Action()
+    data class BlockUser(val userSessionInfoSource: UserSessionInfo, val userSessionInfoDes: UserSessionInfo) :
         Action()
 
-    data class DisconnectAll(val userSessionInfoSource: UserSessionInfo) : Action()
+    data class CloseRoom(val userSessionInfoSource: UserSessionInfo) : Action()
     object None : Action()
 }

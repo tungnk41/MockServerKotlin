@@ -11,6 +11,7 @@ class SessionManager: KoinComponent {
         if (!sessions.containsKey(sessionId)) {
             sessions[sessionId] = session
         }
+        scanTotalSession()
     }
 
     suspend fun getSession(sessionId: String) : DefaultWebSocketSession? {
@@ -22,6 +23,7 @@ class SessionManager: KoinComponent {
             sessions[sessionId]?.close()
             sessions.remove(sessionId)
         }
+        scanTotalSession()
     }
 
     fun getSize(): Int {
@@ -31,6 +33,18 @@ class SessionManager: KoinComponent {
     suspend fun clearAll() {
         sessions.forEach {(_,session) ->
             session.close()
+        }
+    }
+
+    private fun scanTotalSession() {
+        if (sessions.size > 0) {
+            println("SessionManager Print Session : Size: ${sessions.size}")
+            sessions.forEach {
+                println("SessionManager Print Session : SessionId: " + it.key)
+            }
+        }
+        else {
+            println("SessionManager Print Session : Size: 0")
         }
     }
 
