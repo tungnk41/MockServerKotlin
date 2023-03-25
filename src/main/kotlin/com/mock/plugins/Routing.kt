@@ -18,13 +18,15 @@ fun Application.configureRouting() {
 
         route("/api/v1") {
             authRoute()
-            authenticate("auth-jwt") {
+            authenticate("api-auth-jwt") {
                 noteRoute()
                 userRoute()
             }
         }
         route("/socket") {
-            webSocketRoute()
+            authenticate("socket-auth-jwt") {
+                webSocketRoute()
+            }
         }
     }
 }

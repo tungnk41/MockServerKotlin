@@ -1,6 +1,7 @@
 package com.mock.application.websocket
 
 import io.ktor.websocket.*
+import kotlinx.coroutines.isActive
 import org.koin.core.component.KoinComponent
 import java.util.concurrent.ConcurrentHashMap
 
@@ -36,11 +37,14 @@ class SessionManager: KoinComponent {
         }
     }
 
-    private fun scanTotalSession() {
+    private suspend fun scanTotalSession() {
         if (sessions.size > 0) {
             println("SessionManager Print Session : Size: ${sessions.size}")
             sessions.forEach {
                 println("SessionManager Print Session : SessionId: " + it.key)
+                if (!it.value.isActive) {
+                    removeSession(it.key)
+                }
             }
         }
         else {

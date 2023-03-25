@@ -13,11 +13,12 @@ fun Application.module() {
     parseEnvironment()
 
     configureKoin()
-    configureSecurity()
+    configureAuthentication()
     configureSerialization()
     configureException()
     configureLogging()
     configureShutdown()
+    configureSession()
 
     configureWebsocket()
     configureRouting()

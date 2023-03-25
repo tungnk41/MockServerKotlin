@@ -67,7 +67,7 @@ dependencies {
 
     //Websocket
     implementation("io.ktor:ktor-server-websockets:$ktor_version")
-//    implementation("io.ktor:ktor-network:$ktor_version")
+    implementation("io.ktor:ktor-network:$ktor_version")
 //    implementation("io.ktor:ktor-network-tls:$ktor_version")
 
     // Exposed
