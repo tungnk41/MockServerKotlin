@@ -35,7 +35,7 @@ compileTestKotlin.kotlinOptions {
 }
 
 application {
-    mainClass.set("com.mock.ApplicationKt")
+    mainClass.set("com.mock.server.ApplicationKt")
 }
 
 //Change name shadow jar file
@@ -47,6 +47,8 @@ ktor {
 
 
 dependencies {
+
+    //Server
     implementation("io.ktor:ktor-server-core:$ktor_version")
     implementation("io.ktor:ktor-server-netty:$ktor_version")
     implementation("io.ktor:ktor-server-auth:$ktor_version")
@@ -59,8 +61,6 @@ dependencies {
     implementation("io.ktor:ktor-serialization:$ktor_version")
 
     implementation("io.ktor:ktor-server-content-negotiation:$ktor_version")
-    implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
-
 
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("io.ktor:ktor-server-call-logging:$ktor_version")
@@ -82,7 +82,6 @@ dependencies {
     implementation("com.zaxxer:HikariCP:$hikaricp_version")
     implementation("org.postgresql:postgresql:$postgresql_version")
 
-
     // Koin for Kotlin
     implementation("io.insert-koin:koin-ktor:$koin_version")
     implementation("io.insert-koin:koin-logger-slf4j:$koin_version")
@@ -95,5 +94,15 @@ dependencies {
 
     // Firebase admin
     implementation ("com.google.firebase:firebase-admin:$firebase_admin_version")
+
+
+    //Client
+    implementation("io.ktor:ktor-client-core:$ktor_version")
+    implementation("io.ktor:ktor-client-cio:$ktor_version")
+    implementation("io.ktor:ktor-client-logging:$ktor_version")
+    implementation("io.ktor:ktor-client-auth:$ktor_version")
+
+    implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
 
 }

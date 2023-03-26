@@ -24,7 +24,7 @@ server
 docker run ^
 -d ^
 --name mockServer ^
- -p 8080:8080 ^
+ -p 8082:8080 ^
 -e PORT=8080 ^
 -e DATABASE_PREFIX_URL=jdbc:postgresql:// ^
 -e DATABASE_DRIVER=org.postgresql.Driver ^
@@ -34,14 +34,14 @@ docker run ^
 -e DATABASE_PASSWORD=123@123a ^
 -e DATABASE_NAME=postgres ^
 -e JWT_SECRET=secret@123 ^
--e JWT_EXPIRED=30000 ^
+-e JWT_EXPIRED=3000 ^
 server
 
 #################################
 docker run ^
 -d ^
 --name renderServer^
- -p 8080:8080 ^
+ -p 8082:8080 ^
 -e PORT=8080 ^
 -e DATABASE_PREFIX_URL=jdbc:postgresql:// ^
 -e DATABASE_DRIVER=org.postgresql.Driver ^
