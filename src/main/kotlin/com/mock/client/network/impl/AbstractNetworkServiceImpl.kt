@@ -7,17 +7,13 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-
 abstract class AbstractNetworkServiceImpl {
 
     companion object {
         const val BASE_URL = "http://localhost:8082/api/v1"
     }
 
-    open val client = HttpClient(CIO) {
-        install(DefaultRequest) {
-            header(HttpHeaders.ContentType, ContentType.Application.Json)
-        }
+    open val client = HttpClient(CIO)  {
         engine {
             maxConnectionsCount = 1000
             endpoint {
@@ -34,5 +30,14 @@ abstract class AbstractNetworkServiceImpl {
         }
         configureSerialization()
         configureLogging()
+        HttpResponseValidator {
+            validateResponse { response ->
+                when(response.status.value) {
+                    else -> {
+                        println("#### ApiNetworkService:  " + response.status.value)
+                    }
+                }
+            }
+        }
     }
 }

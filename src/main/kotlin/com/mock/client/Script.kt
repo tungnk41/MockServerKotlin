@@ -12,8 +12,10 @@ class Script : KoinComponent{
     val tokenManager by inject<TokenManager>()
     suspend fun run() {
         val loginResponse = authNetworkService.login("kama","123@123a")
-        tokenManager.setAccessToken(loginResponse.data?.accessToken ?: "")
-        tokenManager.setRefreshToken(loginResponse.data?.refreshToken ?: "")
+        tokenManager.access_token = loginResponse.data?.accessToken ?: ""
+        tokenManager.refresh_token = loginResponse.data?.refreshToken ?: ""
+        println("#### Login: " + loginResponse.data)
+        println("#### Token: " + tokenManager.access_token +" : " + tokenManager.refresh_token)
         apiNetworkService.getUserInfo()
     }
 

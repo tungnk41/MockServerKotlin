@@ -11,7 +11,7 @@ import org.koin.dsl.module
 
 val clientNetworkModule = module {
     single { TokenManager() }
-    single<AuthNetworkService> { AuthNetworkServiceImpl() }
+    single<AuthNetworkService> { AuthNetworkServiceImpl(get()) }
     single<ApiNetworkService> { ApiNetworkServiceImpl(get(), get()) }
 
     single { Script() }
