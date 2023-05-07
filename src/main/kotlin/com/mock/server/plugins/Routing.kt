@@ -17,7 +17,6 @@ fun Application.configureRouting() {
 
     routing {
         get("/") {
-            script.run()
             call.respondText("MockServer")
         }
 
